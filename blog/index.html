@@ -20,6 +20,13 @@ pagination:
         <h3><a class="post-title" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3>
         <p class="post-meta">{{ post.date | date: '%B %-d, %Y' }}</p>
         <p>{{ post.excerpt }}</p>
+        {% if post.categories %}
+        <b>Chủ đề: [</b>
+        {% for category in post.categories %}
+            <a href="{{ site.baseurl }}/categories/#{{ category }}">{{ category }}</a>{% if forloop.last == false %},{% endif %}
+        {% endfor %}
+        <b>]</b>
+    {% endif %}
       </li>
     {% endfor %}
   </ul>
