@@ -23,7 +23,7 @@ pagination:
         {% if post.categories %}
         <b>Chủ đề: [</b>
         {% for category in post.categories %}
-            <a href="{{ site.baseurl }}/categories/#{{ category }}">{{ category }}</a>{% if forloop.last == false %},{% endif %}
+            <a href="{{ site.baseurl }}/categories#{{ category }}">{{ category }}</a>{% if forloop.last == false %},{% endif %}
         {% endfor %}
         <b>]</b>
     {% endif %}
