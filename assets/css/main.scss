@@ -14,8 +14,10 @@ $max-content-width: {{site.max_width}};
   "distill"
 ;
 
-img {
-  width: 100%;
+p > img {
+  display: block;
+  margin: auto;
+  max-width: 100%;
 }
 
 p, h1, h2, h3, h4, h5, h6, em, div, span, strong {
