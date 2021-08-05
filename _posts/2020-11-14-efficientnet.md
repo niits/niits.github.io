@@ -1,5 +1,5 @@
 ---
-title: MLP-Mixer - Hướng giải quyết các bài toán Computer Vision mới bên cạnh CNN và Transformer
+title: EfficientNet: Cách tiếp cận mới về Model Scaling cho Convolutional Neural Networks
 categories:
   - Đọc paper cùng bạn
 
