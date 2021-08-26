@@ -11,7 +11,7 @@
   Ti tỉ thứ linh tinh
 
 
-  | blog
+  | Problem 1 - Bội số của 3 và 5
 
 </title>
 <meta name="description" content="Đây là chỗ tổng hợp những gì đã mình tự học và tự chơi ở nhà.
@@ -37,7 +37,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22></text></svg>">
 
 <link rel="stylesheet" href="/assets/css/main.css">
-<link rel="canonical" href="/blog/">
+<link rel="canonical" href="/blog/2020/multiples_of_3_and_5/">
 
 <!-- JQuery -->
 <!-- jQuery -->
@@ -113,14 +113,10 @@
             <a class="nav-link" href="/blog/">
               Bài viết
               
-              <span class="sr-only">(current)</span>
-              
             </a>
           </li>
           
           <!-- Other pages -->
-          
-          
           
           
           
@@ -156,78 +152,71 @@
     <!-- Content -->
 
     <div class="container mt-5">
-      <div class="post">
-  <ul class="post-list">
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2021/MLP-Mixer/">MLP-Mixer - Hướng giải quyết các bài toán Computer Vision mới bên cạnh CNN và Transformer</a></h3>
-        <p class="post-meta">May 7, 2021</p>
-        <p>Có thể nói rằng Convolutional Neural Network hay CNN đã và đang được cho là mô hình vô cùng phù hợp cho thị giác máy tính. Bên cạnh đó các mạng dựa trên cơ chế attention, chẳng hạn như Vision Transformer, cũng dần được quan tâm và sử dụng nhiều hơn. Tuy vậy trong paper mới được publish của mình với tên gọi MLP-Mixer, nhóm Google Brain  ở Zurich và Berlin đã tuyên bố rằng mặc dù các kiến trúc trên đều mang lại hiệu xuất cũng như độ chính xác cao, việc sử dụng chúng đôi khi là không cần thiết. Vậy nên trong bài viết này, chúng ta sẽ cùng tìm hiểu cách thức hoạt động của kiến trúc này cũng như sự khác biệt của nó với các kiến trúc mạng khác.</p>
-        
-        <b>Chủ đề: [</b>
-        
-            <a href="/categories#Đọc paper cùng bạn">Đọc paper cùng bạn</a>
-        
-        <b>]</b>
-    
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2021/machine-learning-in-production/">Machine learning trên môi trường Production</a></h3>
-        <p class="post-meta">February 17, 2021</p>
-        <p>Phần này dịch từ Note của so sánh cách triển khai Machine learning khi nghiên cứu và triển khai trên môi trường Production cũng như nêu các vấn đề cần quan tâm khi triển khai các ứng dụng machine learning ở môi trường thực tế.</p>
-        
-        <b>Chủ đề: [</b>
-        
-            <a href="/categories#Machine Learning Systems Design">Machine Learning Systems Design</a>
-        
-        <b>]</b>
-    
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/multiples_of_3_and_5/">Problem 1 - Bội số của 3 và 5</a></h3>
-        <p class="post-meta">December 30, 2020</p>
-        <p>Nếu chúng ta liệt kê tất cả các số tự nhiên dưới 10 là bội số của 3 hoặc 5, chúng ta sẽ nhận được 3, 5, 6 và 9. Tổng của các bội số này là 23. Đề bài yêu cầu tìm tổng của tất cả các bội số của 3 hoặc 5 dưới 1000.</p>
-        
-        <b>Chủ đề: [</b>
-        
-            <a href="/categories#Project Euler">Project Euler</a>
-        
-        <b>]</b>
-    
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/even-fibonacci-numbers/">Problem 2 - Các số Finobacci chẵn</a></h3>
-        <p class="post-meta">December 30, 2020</p>
-        <p>Mỗi số trong dãy Fibonacci được tạo ra bằng cách cộng hai số liền trước với nhau. Ví dụ như bắt đầu từ 1 và 2, 10 số đầu tiên sẽ là 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ... Hãy tính tổng các số trong dãy Fibonacci có giá trị chẵn và không vượt quá 4 triệu.</p>
-        
-        <b>Chủ đề: [</b>
-        
-            <a href="/categories#Project Euler">Project Euler</a>
-        
-        <b>]</b>
-    
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/efficientnet/">EfficientNet, cách tiếp cận mới về Model Scaling cho Convolutional Neural Networks</a></h3>
-        <p class="post-meta">November 14, 2020</p>
-        <p>Kể từ khi AlexNet giành chiến thắng trong cuộc thi ImageNet năm 2012, CNNs (viết tắt của Mạng nơ ron tích chập) đã trở thành thuật toán de facto cho nhiều loại nhiệm vụ trong học sâu, đặc biệt là đối với thị giác máy tính. Từ năm 2012 đến nay, các nhà nghiên cứu đã thử nghiệm và cố gắng đưa ra các kiến trúc ngày càng tốt hơn để cải thiện độ chính xác của mô hình trong các nhiệm vụ khác nhau. Hôm nay, chúng ta sẽ đi sâu vào nghiên cứu mới nhất, EfficientNet, không chỉ tập trung vào việc cải thiện độ chính xác mà còn cả hiệu quả của các mô hình.</p>
-        
-        <b>Chủ đề: [</b>
-        
-            <a href="/categories#Đọc paper cùng bạn">Đọc paper cùng bạn</a>
-        
-        <b>]</b>
-    
-      </li>
-    
-  </ul>
+      
 
-  
+<div class="post">
 
+  <header class="post-header">
+    <h1 class="post-title">Problem 1 - Bội số của 3 và 5</h1>
+    <p class="post-meta">December 30, 2020</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="https://projecteuler.net/problem=1" title="Problem 1 - Multiples of 3 and 5">Problem 1 - Multiples of 3 and 5</a></p>
+
+<h2 id="đề-bài">Đề bài</h2>
+
+<p>Nếu chúng ta liệt kê tất cả các số tự nhiên dưới 10 là bội số của 3 hoặc 5, chúng ta sẽ nhận được 3, 5, 6 và 9. Tổng của các bội số này là 23.</p>
+
+<p>Tìm tổng của tất cả các bội số của 3 hoặc 5 dưới 1000.</p>
+
+<h2 id="hướng-làm">Hướng làm</h2>
+
+<p>Có thể thấy rằng có một cách đơn giản rằng ta có thể duyệt tất cả các số từ 1 đến 1000 kiểm tra chúng là bội của 3 và 5 không, nếu có thì cộng chúng lại với nhau.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">i</span>
+</code></pre></div></div>
+
+<p>Tuy nhiên bài này trong Project Euler nên việc làm hùng hục như trâu húc mả vậy là không chấp nhận được.</p>
+
+<p>Để ý một chút ta có thể thấy tổng các số nhỏ hơn 1000 và là bội số của 3 là:</p>
+
+\[3 + 6 + 9 + 12 + ... + 999 = 3 * (1 + 2 + 3+ ... + 333)\]
+
+<p>Tương tự với 5 là:</p>
+
+\[5 + 10 + 15 + ... +  995 = 5 * (1 + 2 + 3+ ... + 199)\]
+
+<p>Mà ta lại biết rằng:</p>
+
+\[1 + 2 + 3 + 4 + ... + N = N * ( N + 1 ) / 2\]
+
+<p>Vậy nên ta có cách có vẻ có não hơn như sau:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">sum_divisble_by</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">p</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span><span class="mi">2</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">sum_divisble_by</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">999</span><span class="p">)</span> <span class="o">+</span> <span class="n">sum_divisble_by</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">999</span><span class="p">)</span> <span class="o">-</span> <span class="n">sum_divisble_by</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">999</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Có xuất hiện việc trừ đi <code class="language-plaintext highlighter-rouge">python sum_divisble_by(15, 999)</code> là do các bội số của 15 sẽ được tính 2 lần.</p>
+
+  </article>
+
+  <div class="page-subtitle">
+    
+        
+            <b>Chủ đề: [</b>
+        
+        <a href="/category/#Project Euler" title="Project Euler">Project Euler</a>
+        
+            <b>]</b>
+        
+    
+</div>
 
 </div>
 

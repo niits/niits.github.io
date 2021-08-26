@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<title>
+
+  Ti tỉ thứ linh tinh
+
+
+  | Problem 2 - Các số Finobacci chẵn
+
+</title>
+<meta name="description" content="Đây là chỗ tổng hợp những gì đã mình tự học và tự chơi ở nhà.
+">
+
+<!-- Open Graph -->
+
+
+<!-- Bootstrap & MDB -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha512-MoRNloxbStBcD8z3M/2BmnT+rg4IsMxPkXaGh2zD6LGNNFE80W3onsAhRcMAMrSoyWL9xD7Ert0men7vR8LUZg==" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" integrity="sha512-RO38pBRxYH3SoOprtPTD86JFOclM51/XTIdEPh5j8sj4tp8jmQIx26twG52UaLi//hQldfrh7e51WzP9wuP32Q==" crossorigin="anonymous" />
+
+<!-- Fonts & Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"  integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.0/css/academicons.min.css" integrity="sha512-W4yqoT1+8NLkinBLBZko+dFB2ZbHsYLDdr50VElllRcNt2Q4/GSs6u71UHKxB7S6JEMCp5Ve4xjh3eGQl/HRvg==" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+<!-- Code Syntax Highlighting -->
+<link rel="stylesheet" href="https://gitcdn.link/repo/jwarby/jekyll-pygments-themes/master/github.css" />
+
+<!-- Styles -->
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22></text></svg>">
+
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="canonical" href="/blog/2020/even-fibonacci-numbers/">
+
+<!-- JQuery -->
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
+
+<!-- Theming-->
+
+<script src="/assets/js/theme.js"></script>
+<script src="/assets/js/dark_mode.js"></script>
+
+
+
+
+
+
+    
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+  </head>
+
+  <body class="fixed-top-nav sticky-bottom-footer">
+
+    <!-- Header -->
+
+    <header>
+
+    <!-- Nav Bar -->
+    <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+    <div class="container">
+      
+      <a class="navbar-brand title font-weight-lighter" href="/">
+       Ti tỉ thứ linh tinh
+      </a>
+      
+      <!-- Navbar Toggle -->
+      <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar top-bar"></span>
+        <span class="icon-bar middle-bar"></span>
+        <span class="icon-bar bottom-bar"></span>
+      </button>
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          <!-- About -->
+          <li class="nav-item ">
+            <a class="nav-link" href="/">
+              Về tôi
+              
+            </a>
+          </li>
+
+          <li class="nav-item ">
+            <a class="nav-link" href="/categories">
+              Các chủ đề
+              
+            </a>
+          </li>
+  
+          
+          <!-- Blog -->
+          <li class="nav-item active">
+            <a class="nav-link" href="/blog/">
+              Bài viết
+              
+            </a>
+          </li>
+          
+          <!-- Other pages -->
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+            <div class = "toggle-container">
+              <a id = "light-toggle">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+              </a>
+            </div>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+</header>
+
+
+    <!-- Content -->
+
+    <div class="container mt-5">
+      
+
+<div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Problem 2 - Các số Finobacci chẵn</h1>
+    <p class="post-meta">December 30, 2020</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="https://projecteuler.net/problem=2" title="Problem 2 - Even Fibonacci numbers">Problem 2 - Even Fibonacci numbers</a></p>
+
+<h2 id="đề-bài">Đề bài</h2>
+
+<p>Mỗi số trong dãy Fibonacci được tạo ra bằng cách cộng hai số liền trước với nhau. Ví dụ như bắt đầu từ 1 và 2, 10 số đầu tiên sẽ là:</p>
+
+<p>1, 2, 3, 5, 8, 13, 21, 34, 55, 89, …</p>
+
+<p>Hãy tính tổng các số trong dãy Fibonacci có giá trị chẵn và không vượt quá 4 triệu.</p>
+
+<h2 id="hướng-làm">Hướng làm</h2>
+
+<p>Tương tự như Problem 1 nếu bạn quá rảnh thì có thể ngồi tính từng số, kiểm tra số mới sinh ra có chẵn hay không rồi cộng vào.</p>
+
+<p>Tuy nhiên chạy đến số 4 triệu chắc chẳng ai rảnh cho lắm nên ta có thể xem xét dãy và thấy rằng các số cần liệt kê là:</p>
+
+<p>2, 8, 34, 144, ….</p>
+
+<p>Các số này dường như có công thức chung là \(F_n = 4 * F{n - 3} + F_{n - 6}\)</p>
+
+<p>Thế nên loại bỏ các số lẻ xen kẽ ta sẽ thu được dãy số mới theo quy luật \(F_n = 4 * F_{n - 3} + F_{n - 6}\)</p>
+
+<p>Tất nhiên là nó sẽ nhanh hơn 1 tý nhưng mọi người vẫn phải chạy 1 cái vòng lặp lâu ơi là lâu nên ta xét tiếp đến cái gọi là <a href="https://en.wikipedia.org/wiki/Fibonacci_number#Relation_to_the_golden_ratio">Binet’s formula</a>.</p>
+
+<p>Khi đó số thứ n trong dãy Fibonacci sẽ được biểu diễn là:</p>
+
+\[F_{n} = {\frac {\varphi ^{n}-\psi ^{n}}{\varphi -\psi }}={\frac {\varphi ^{n}-\psi ^{n}}{\sqrt {5}}}\]
+
+<p>Với</p>
+
+\[\displaystyle \varphi = {\frac {1 + {\sqrt {5}}}{2}}\approx 1.61803 \ldots\]
+
+<p>Được gọi là <a href="https://en.wikipedia.org/wiki/Golden_ratio">Golden ratio</a> (Tỉ lệ vàng)</p>
+
+<p>Và</p>
+
+\[{\displaystyle \psi = {\frac {1-{\sqrt {5}}}{2}}=1-\varphi =-{1 \over \varphi }\approx -0.61803C39887\ldots .}\]
+
+<p>Cái này trên wiki không ghi gì chắc không có tên nên thôi kệ.</p>
+
+<p>Tại vì ở trên ta có thể thấy là các số cần cộng vào đều có chỉ số là bội của 3 thế nên ta có cái công thức sau để tính:</p>
+
+\[\sum_{i=1}^{k}(\frac{\phi^{3i} -\psi^{3i}}{\sqrt{5}}) =\frac{1}{\sqrt{5}}({\sum_{i=1}{k}({\phi^3}^i)} - {\sum_{i=1}{k}({\psi^3}^i)}) =\frac{1}{\sqrt{5}}(\phi^3\frac{1-{\phi^3}^k}{1-\phi^3} - \psi^3\frac{1-{\psi^3}^k}{1-\psi^3})\]
+
+<p>Cái dấu bằng thứ 3 í là áp dụng công thức khai triển \(x^n - 1\) chắc ai cũng còn nhớ.</p>
+
+<p>Vậy nên với \(F_n\) cho trước ta có thể tìm số thứ tự cuối n bằng công thức <a href="https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers">Fibonacci nghịch đảo</a>.</p>
+
+\[\log_{\phi}(\frac{F_{n}\sqrt{5} + \sqrt{5F_{n}^{2}-4}}{2})\]
+
+<p>Vậy nên sau đây là phần code bằng python:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">log</span>
+
+<span class="n">phi</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">psi</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">reverse_fib</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">floor</span><span class="p">(</span><span class="n">log</span><span class="p">((</span><span class="n">fn</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">fn</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">phi</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">sum_even</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+    <span class="n">phi3</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">**</span> <span class="mi">3</span>
+    <span class="n">psi3</span> <span class="o">=</span> <span class="n">psi</span> <span class="o">**</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">phi3</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi3</span> <span class="o">**</span> <span class="n">k</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi3</span><span class="p">))</span> <span class="o">-</span>
+        <span class="n">psi3</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">psi3</span> <span class="o">**</span> <span class="n">k</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">psi3</span><span class="p">))</span>
+    <span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">6</span><span class="p">)):</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">reverse_fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">//</span> <span class="mi">3</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">sum_even</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><strong>Code ăn cắp từ bài viết <a href="https://medium.com/@TheZaki/project-euler-2-even-fibonacci-numbers-2219e9438970">Project Euler #2: Even Fibonacci numbers</a> của tác giả Oussama Zaki</strong></p>
+
+  </article>
+
+  <div class="page-subtitle">
+    
+        
+            <b>Chủ đề: [</b>
+        
+        <a href="/category/#Project Euler" title="Project Euler">Project Euler</a>
+        
+            <b>]</b>
+        
+    
+</div>
+
+</div>
+
+    </div>
+
+  </body>
+
+  <!-- Bootsrap & MDB scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha512-M5KW3ztuIICmVIhjSqXe01oV2bpe248gOxqmlcYrEzAvws7Pw3z6BK0iGbrwvdrUQUhi3eXgtxp5I8PDo9YfjQ==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js" integrity="sha512-Mug9KHKmroQFMLm93zGrjhibM2z2Obg9l6qFG2qKjXEXkMp/VDkI4uju9m4QKPjWSwQ6O2qzZEnJDEeCw0Blcw==" crossorigin="anonymous"></script>
+
+  
+<!-- Mansory & imagesLoaded -->
+<script defer src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script defer src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+<script defer src="/assets/js/mansory.js" type="text/javascript"></script>
+
+
+  
+
+
+<!-- Medium Zoom JS -->
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="/assets/js/zoom.js"></script>
+
+
+<!-- Load Common JS -->
+<script src="/assets/js/common.js"></script>
+
+
+</html>

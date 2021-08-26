@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-08-26T09:23:43+00:00</updated><id>/feed.xml</id><title type="html">Ti tỉ thứ linh tinh</title><subtitle>Đây là chỗ tổng hợp những gì đã mình tự học và tự chơi ở nhà.
+</subtitle><entry><title type="html">MLP-Mixer - Hướng giải quyết các bài toán Computer Vision mới bên cạnh CNN và Transformer</title><link href="/blog/2021/MLP-Mixer/" rel="alternate" type="text/html" title="MLP-Mixer - Hướng giải quyết các bài toán Computer Vision mới bên cạnh CNN và Transformer" /><published>2021-05-07T00:00:00+00:00</published><updated>2021-05-07T00:00:00+00:00</updated><id>/blog/2021/MLP-Mixer</id><content type="html" xml:base="/blog/2021/MLP-Mixer/">&lt;p&gt;Có thể nói rằng Convolutional Neural Network hay CNN đã và đang được cho là mô hình vô cùng phù hợp cho thị giác máy tính. Bên cạnh đó các mạng dựa trên cơ chế attention, chẳng hạn như Vision Transformer, cũng dần được quan tâm và sử dụng nhiều hơn. Tuy vậy trong paper mới được publish của mình với tên gọi &lt;a href=&quot;https://arxiv.org/pdf/2105.01601.pdf&quot;&gt;MLP-Mixer: An all-MLP Architecture for Vision&lt;/a&gt;, nhóm Google Brain ở Zurich và Berlin đã tuyên bố rằng &lt;del&gt;năm 2021 rồi ai cùng dùng mấy cái đấy nữa&lt;/del&gt; mặc dù các kiến trúc trên đều mang lại hiệu xuất cũng như độ chính xác cao, việc sử dụng chúng đôi khi là không cần thiết. Vậy nên trong bài viết này, chúng ta sẽ cùng tìm hiểu cách thức hoạt động của kiến trúc này cũng như sự khác biệt của nó với các kiến trúc mạng khác.&lt;/p&gt;
+
+&lt;h2 id=&quot;tổng-quan-kiến-trúc-của-mlp-mixer&quot;&gt;Tổng quan kiến trúc của MLP-Mixer&lt;/h2&gt;
+
+&lt;p&gt;Như có thể dễ dàng nhận thấy, sự xuất hiện của các bộ dữ liệu với kích thước ngày càng lớn và cùng với đó là khả năng tính toán của máy móc càng ngày càng được cải thiện dẫn đến nhiều kiến trúc mô hình được ra đời cũng như dần được cải tiến. Trong khi Convolutional Neural Network đã và đang là tiêu chuẩn thực tế cho thị giác máy tính, gần đây Vision Transformers (ViT), một giải pháp thay thế dựa trên các lớp self-attention đã đạt được hiệu suất của các mô hình hiện đại được công bố trước đó. ViT tiếp tục xu hướng lâu dài là loại bỏ các đặc trưng “hand-crafted” và “inductive biases” khỏi các mô hình và dựa vào việc học hỏi nhiều hơn từ dữ liệu thô.&lt;/p&gt;
+
+&lt;p&gt;Tiếp nối truyền thống tre chưa già mà măng đã mọc, kiến trúc MLP-Mixer được nhóm tác giả đề xuất và được cho là đơn giản hơn các mô hình trước đây nhưng không hề thua kém về hiệu xuất khi không sử dụng đến các lớp convolution hay cơ chế self-attention. Thay vào đó kiến trúc của Mixer hoàn toàn dựa trên perceptron nhiều lớp, thứ được áp dụng nhiều lần trên thông tin không gian cũng như các đặc trưng theo channel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/mlp-mixer/1.png&quot; alt=&quot;mlp-mixer/1.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;dữ-liệu-đầu-vào&quot;&gt;Dữ liệu đầu vào&lt;/h3&gt;
+
+&lt;p&gt;Hình minh họa trên được trích từ paper mô tả tổng quan kiến trúc của Mixer. Kiến trúc này nhận đầu vào là một chuỗi các phần của hình ảnh được chiếu tuyến tính (được đề cập trong paper với khái niệm token) như một bảng có kích thước là (số token x số channel). Như trong hình minh họa trên đang thể hiện kiến trúc của một mô hình phân lớp, hình ảnh đầu vào được chia thành 9 phần tương ứng với 9 token là đầu vào cho mạng. Để hình dung rõ hơn, ta hãy cùng quan sát phần mã Pytorch được cài đặt cho phần &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PatchEmbed&lt;/code&gt; ở repo &lt;a href=&quot;https://github.com/rwightman/pytorch-image-models&quot;&gt;pytorch-image-models&lt;/a&gt; được thể hiện ở hình dưới đây.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/mlp-mixer/2.png&quot; alt=&quot;mlp-mixer/2.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Có thể thấy rằng qua module này, ảnh đầu vào với kích thước \((224, 224)\) được chia thành từng phần với kích thước \((16, 16)\) sau đó được từng phần nhỏ kia được chuyển đổi thành một vector có kích thước \(16 *16* 3 = 768\) do ảnh đầu vào có 3 channel lần lượt là R, G, B như thông thường. Khi đó bảng giá trị đầu vào sẽ có kích thước là \((196 *768)\) do ta có tổng cộng \((224/16)* (224/16)\) token tương ứng với từng đó phần của ảnh đầu vào.&lt;/p&gt;
+
+&lt;h3 id=&quot;cấu-trúc-của-mixerlayer&quot;&gt;Cấu trúc của MixerLayer&lt;/h3&gt;
+
+&lt;p&gt;Mixer lấy ý tưởng từ việc sử dụng convolution với các kernel nhỏ đến cực điểm: bằng cách giảm kích thước kernel xuống 1 × 1 và việc này biến các phép convolution thành phép nhân ma trận dense tiêu chuẩn được áp dụng độc lập cho từng vị trí không gian. Tuy vậy chỉ riêng sửa đổi này không cho phép tổng hợp thông tin không gian và để bù lại, nhóm tác giả áp dụng phép nhân ma trận dense được áp dụng cho mọi đối tượng trên tất cả các vị trí không gian.&lt;/p&gt;
+
+&lt;p&gt;Điểm này khiến cho MLP-Mixer khác với các loại kiến trúc mạng khác khi thay vì dùng các thành phần convolution hay cơ chế self-attention, Mixer sử dụng MixerLayer được tạo nên bằng cách sử dụng hai loại MLP như sau:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Channel-mixing MLP: cho phép giao tiếp giữa các channel khác nhau; chúng hoạt động trên từng token một cách độc lập và lấy các hàng riêng lẻ của bảng làm đầu vào. T&lt;/li&gt;
+  &lt;li&gt;Token-mixing MLP: cho phép giao tiếp giữa các vị trí không gian khác nhau (token); chúng hoạt động trên từng channel độc lập và lấy các cột riêng lẻ của bảng làm đầu vào.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Hai loại lớp này được xen kẽ để cho phép tương tác của cả hai thứ nguyên đầu vào là theo từng token và theo từng channel và tạo nên một &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MixerLayer&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Quay trở lại với hình minh họa, ta có thể thấy rằng trong mỗi &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MixerLayer&lt;/code&gt;, bảng dữ liệu đầu vào sau khi qua một &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LayerNorm&lt;/code&gt; sẽ được chuyển vị và truyền qua các token-mixing MLP với theo từng channel sau đó tiếp tục được chuyển vị về kích thước cũ và truyền qua các channel-mixing MLP sau khi đã truyền qua một &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LayerNorm&lt;/code&gt; thứ hai. Bên cạnh đó, trước mỗi &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LayerNorm&lt;/code&gt; luôn có &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;skip-connections&lt;/code&gt;, là một kĩ thuật được đã giới thiệu tại paper &lt;a href=&quot;https://doi.org/10.1109/CVPR.2016.90&quot;&gt;Deep Residual Learning for Image Recognition&lt;/a&gt;, cho phép đào tạo các mạng thần kinh rất sâu với hàng trăm lớp và được cải thiện hơn nữa hiệu suất.&lt;/p&gt;
+
+&lt;p&gt;Phần mã dưới đây thể hiện cách thức cài đặt của &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MixerLayer&lt;/code&gt;. Có thể thấy rằng cấu trúc của &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MixerLayer&lt;/code&gt; được cài đặt đầy đủ trong class &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MixerBlock&lt;/code&gt; (không giống như repo nào đấy của Yolov4 treo đầu dê bán thịt chó, trong paper có PAN mà tìm không thấy đâu) khi mà mỗi &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MixerBlock&lt;/code&gt; có hai &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LayerNorm&lt;/code&gt; trước mỗi lớp MLP cũng như cài đặt mã phục vụ cho quá trình &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;skip-connections&lt;/code&gt; .&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/mlp-mixer/3.png&quot; alt=&quot;mlp-mixer/3.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Cuối cùng, thành phần nhỏ nhấn được thể hiện trong hình minh họa là các khối MLP. Chúng được cấu tạo bởi hai lớp fully-connected và một hàm kích hoạt phi tuyến tính được áp dụng độc lập cho mỗi hàng của tensor dữ liệu đầu vào cụ thể là hàm GELU có công thức như sau:&lt;/p&gt;
+
+\[\text{GELU}\left(x\right) = x{P}\left(X\leq{x}\right) = x\Phi\left(x\right) = x \cdot \frac{1}{2}\left[1 + \text{erf}(x/\sqrt{2})\right]\]
+
+&lt;p&gt;Mã cài đặt của chúng được thể hiện trong hình dưới đây:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/mlp-mixer/4.png&quot; alt=&quot;mlp-mixer/4.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;so-sánh-với-các-kiến-trúc-khác&quot;&gt;So sánh với các kiến trúc khác&lt;/h3&gt;
+
+&lt;p&gt;Do ý tưởng thiết kế được bắt nguồn từ ý tưởng từ các tài liệu trên Convolutional Neural Network và Transformers, MLP-Mixer có một số điểm tương đồng cũng như khác biệt với hai kiểu kiến trúc trên.&lt;/p&gt;
+
+&lt;p&gt;Đầu tiên, các token-mixing MLP hoạt động trên từng channel độc lập và lấy các cột riêng lẻ của bảng làm đầu vào. Ràng buộc các tham số của channel-mixing MLP (trong mỗi lớp) là một lựa chọn tự nhiên — nó cung cấp bất biến vị trí (nguyên văn là positional invariance, thể hiện việc ta có thể phát hiện và phân lớp các đối tượng kể cả khi vị trí chúng được thay đổi) vốn là một tính năng nổi bật của việc sử dụng convolution.&lt;/p&gt;
+
+&lt;p&gt;Tuy vậy, việc ràng buộc các thông số trên các channel ít được sử dụng hơn. Ví dụ như việc lấy separable convolution, được sử dụng trong một số kiến trúc CNN, thường được thực hiện bằng cách áp dụng áp dụng convolution cho từng channel độc lập, sử dụng một kernel khác nhau để áp dụng cho mỗi channel. Điều này không giống như các token-mixing MLP trong Mixer khi chúng chia sẻ cùng một kernel (của receptive fied) cho tất cả các channel. Do đó như được trình bày trong paper, điều này dẫn đến việc ràng buộc tham số đã ngăn không cho kiến trúc không phát triển quá nhanh khi tăng kích thước bảng dữ liệu và giúp đến tiết kiệm bộ nhớ đáng kể.&lt;/p&gt;
+
+&lt;p&gt;Cuối cùng, mỗi lớp trong Mixer (ngoại trừ lớp chiếu các phần ảnh đầu vào ban đầu) nhận một đầu vào có cùng kích thước. Thiết kế “đẳng hướng” này gần giống với Transformer hoặc các kiến trúc RNN sâu khác. Điều này không giống như hầu hết các kiến trúc mạng tích chập khi các kiến trúc mạng này có cấu trúc hình chóp: các lớp sâu hơn có đầu vào độ phân giải thấp hơn, nhưng nhiều channel hơn. Và hơn nữa, không giống như kiến trúc ViT, Mixer không sử dụng embedding cho thông tin vị trí bởi các token-mixing MLP có thông tin về thứ tự các token đầu vào và do đó nó có thể học thể hiện thông tin vị trí.&lt;/p&gt;
+
+&lt;h2 id=&quot;kết-quả-thực-nghiệm&quot;&gt;Kết quả thực nghiệm&lt;/h2&gt;
+
+&lt;p&gt;Để chứng minh hiệu năng của kiến trúc mô hình này, nhóm tác giả đã thực nghiệm trên các một số bộ dữ liệu lớn. Kết quả thu được như sau được thể hiện ở hình được trích từ paper dưới đây thể hiện các thông tin về độ chính xác và tài nguyên được sử dụng khi so sánh Mixer với các mô hình hiện đại khác. Các cột “ImNet” và “ReaL” đề cập đến các nhãn xác thực ImageNet ban đầu và các nhãn ReaL đã được làm sạch trong khi đó “Avg 5 ”là viết tắt của hiệu suất trung bình trên tất cả năm tác vụ ImageNet, CIFAR-10, CIFAR-100, Pets, Flowers.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/mlp-mixer/5.png&quot; alt=&quot;mlp-mixer/5.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Mặc dù hoạt động không tốt khi train từ đầu trên mageNet-1k, Mixer đạt được hiệu suất tổng thể khá cao (84,15% top-1 trên ImageNet) khi được pre-trained trên ImageNet-21k với Regularization bổ sung, mặc dù hơi kém so với các mô hình khác. Regularization trong trường hợp này là cần thiết và Mixer sẽ bị overfit nếu không sử dụng nó, và theo nhóm tác giả, điều này phù hợp với các quan sát tương tự đối với ViT.&lt;/p&gt;
+
+&lt;p&gt;Khi kích thước của tập dữ liệu tăng lên, hiệu suất của Mixer sẽ cải thiện đáng kể. Đặc biệt, Mixer-H/14 đạt độ chính xác top-1 là 87,94% trên ImageNet, tốt hơn 0,5% so với BiTResNet152x4 và chỉ thấp hơn 0,5% so với ViT-H/14. Đáng chú ý, Mixer-H/14 chạy nhanh hơn 2,5 lần so với ViT-H/14 và gần như gấp đôi BiT.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/mlp-mixer/6.png&quot; alt=&quot;mlp-mixer/6.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Tuy được tuyên bố như vậy trong paper, có một số ý kiến khác được đưa ra khi thảo luận về về MLP-Mixer. &lt;a href=&quot;https://www.reddit.com/r/MachineLearning/comments/n59kjo/r_mlpmixer_an_allmlp_architecture_for_vision/gx03nhe?utm_source=share&amp;amp;utm_medium=web2x&amp;amp;context=3&quot;&gt;BeatLeJuce trên Reddit&lt;/a&gt; cho rằng MLP-Mixer sẽ không hoạt động hiệu quả trên các tập dữ liệu với kích thước nhỏ hơn. Thậm chí, &lt;a href=&quot;https://www.reddit.com/r/MachineLearning/comments/n59kjo/r_mlpmixer_an_allmlp_architecture_for_vision/gx49nrr?utm_source=share&amp;amp;utm_medium=web2x&amp;amp;context=3&quot;&gt;kardeng trên Reddit&lt;/a&gt; cho rằng việc sử dụng MLP trong MLP-Mixer không phải quá độc đáo và kiến trúc này không có tiềm năng đáng kể vì các lớp được kết nối đầy đủ đã là một phần của kiến trúc CNN ngay từ đầu (LeNet) nhưng đã dần bị loại bỏ theo thời gian. Bằng cách giới hạn các tương tác đến “chỉ giữa các vị trí không gian”, các bậc tự do được giảm xuống mức mà bây giờ MLP-Mixer &lt;strong&gt;chỉ&lt;/strong&gt; cần &lt;strong&gt;100 triệu&lt;/strong&gt; hình ảnh tiền đào tạo hoặc &lt;strong&gt;1 triệu&lt;/strong&gt; hình ảnh tiền đào tạo và Regularization để đạt được kết quả gần như SOTA. Một số khác cũng cho rằng bên cạnh việc đòi hỏi quá nhiều dữ liệu, đi kèm với độ lớn của model và dữ liệu là đòi hỏi năng lực tính toán rất lớn.&lt;/p&gt;
+
+&lt;h2 id=&quot;kết-luận&quot;&gt;Kết luận&lt;/h2&gt;
+
+&lt;p&gt;Do là miếng gạch đầu tiên đặt vào một hướng đi mới nhằm giải quyết các bài toán thị giác máy, MLP-Mixer có kiến trúc khá đơn giản và bên cạnh đó còn khá nhiều vấn đề cần được giải quyết như việc cần quá nhiều dữ liệu để huấn luyện cũng như cần có khả năng tính toán tương xứng với kích thước của mô hình, vốn được cho rằng khá lớn so với các kiến trúc mạng khác. Trên hết, theo nhóm tác giả đề cập trong paper, họ hy vọng rằng kết quả nghiên cứu này sẽ thúc đẩy các nghiên cứu sâu hơn, vượt ra ngoài lĩnh vực của các mô hình đã được thiết lập dựa trên convolution và self-attention và sẽ đặc biệt thú vị khi xem liệu một thiết kế như vậy có hoạt động trong NLP hay các miền khác hay không. Bài viết đến đây là kết thúc cảm ơn mọi người đã giành thời gian đọc.&lt;/p&gt;
+
+&lt;h2 id=&quot;tài-liệu-tham-khảo&quot;&gt;Tài liệu tham khảo&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/pdf/2105.01601v1.pdf&quot;&gt;MLP-Mixer: An all-MLP Architecture for Vision&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://paperswithcode.com/method/gelu&quot;&gt;Gaussian Linear Error Units&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.reddit.com/r/MachineLearning/comments/n59kjo/r_mlpmixer_an_allmlp_architecture_for_vision/&quot;&gt;[R] MLP-Mixer: An all-MLP Architecture for Vision&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><category term="Đọc paper cùng bạn" /><summary type="html">Có thể nói rằng Convolutional Neural Network hay CNN đã và đang được cho là mô hình vô cùng phù hợp cho thị giác máy tính. Bên cạnh đó các mạng dựa trên cơ chế attention, chẳng hạn như Vision Transformer, cũng dần được quan tâm và sử dụng nhiều hơn. Tuy vậy trong paper mới được publish của mình với tên gọi MLP-Mixer, nhóm Google Brain ở Zurich và Berlin đã tuyên bố rằng mặc dù các kiến trúc trên đều mang lại hiệu xuất cũng như độ chính xác cao, việc sử dụng chúng đôi khi là không cần thiết. Vậy nên trong bài viết này, chúng ta sẽ cùng tìm hiểu cách thức hoạt động của kiến trúc này cũng như sự khác biệt của nó với các kiến trúc mạng khác.</summary></entry><entry><title type="html">Machine learning trên môi trường Production</title><link href="/blog/2021/machine-learning-in-production/" rel="alternate" type="text/html" title="Machine learning trên môi trường Production" /><published>2021-02-17T00:00:00+00:00</published><updated>2021-02-17T00:00:00+00:00</updated><id>/blog/2021/machine-learning-in-production</id><content type="html" xml:base="/blog/2021/machine-learning-in-production/">&lt;h2 id=&quot;mục-tiêu-của-machine-learning&quot;&gt;Mục tiêu của Machine learning&lt;/h2&gt;
+
+&lt;p&gt;Các nghiên cứu cũng như các dự án về Machine learning trong môi trường học thuật nói chung hầu hết đều hướng đến một mục tiêu duy nhất - đề xuất một phương pháp mới nhằm nâng cao hiệu suất để vượt qua các thành tựu của các state-of-the-art trong một bài toán cụ thể mà một số trong các phương pháp đó có thể khiến mô hình trở nên khá phức tạp để có thể sử dụng.&lt;/p&gt;
+
+&lt;p&gt;Trong khi đó, trong môi trường doanh nghiệp, có một số sự đánh đổi cần có để có thể triển khai các hệ thống Machine learning trên môi trường Production. Thông thường, các hệ thống này thường giải quyết một tập các bài toán liên quan đến nhau chứ không tập trung chuyên sâu vào khía cạnh nào đó. Chẳng hạn như hệ thống Machine learning phục vụ cho một nền tảng đăng bài sẽ cần giải quyết một số bài toán như sắp xếp các bài viết dựa trên chất lượng, đề xuất các bài viết phù hợp với người dùng, …Khi đó hệ thống Machine learning của chúng ta là một tập các giải pháp nhằm giải quyết nhiều bài toán khác nhau và mỗi sự thay đổi dù nâng cao hiệu suất của một khía cạnh nhưng lại khiến cả hệ thống có nguy cơ trở nên quá phức tạp để vận hành từ đó ảnh hưởng xấu đến hiệu năng toàn hệ thống.&lt;/p&gt;
+
+&lt;p&gt;Bên cạnh đó, việc cải thiện hiệu năng đôi khi không mang lại quá nhiều lợi ích cũng như doanh thu cho mô hình kinh doanh. Chẳng hạn việc tiêu thụ tài nguyên được cải thiện một chút chẳng hạn 2% cũng đủ giúp các tập đoàn lớn tiết kiệm hàng triệu đô la. Tuy nhiên, độ chính xác của một bộ nhận dạng giọng nói tăng từ 92% lên 95% cũng không giúp ích quá nhiều cho việc nâng cao trải nhiệm người dùng mà đôi khi còn gây ra nhiều khó khăn đội ngũ phát triển khi logic của ứng dụng có thể cần được thay đổi và cần thời gian để đảm bảo hệ thống hoạt động ổn định.&lt;/p&gt;
+
+&lt;h2 id=&quot;dữ-liệu&quot;&gt;Dữ liệu&lt;/h2&gt;
+
+&lt;p&gt;Khác với khi nghiên cứu, dữ liệu được sử dụng trong các môi trường thực tế thường không phải là dữ liệu sạch và có định dạng chuẩn mực. Có thể nói, quá trình nghiên cứu tập trung thử nghiệm các phương pháp mới, bởi vậy dữ liệu được sử dụng thường là các bộ dữ liệu uy tín được sử dụng rộng rãi làm thước đo chung để đánh giá hiệu năng cũng như độ chính xác và hiển nhiên chúng cần có chất lượng tốt mới, ổn định nên mới được sử dụng nhiều như vậy.&lt;/p&gt;
+
+&lt;p&gt;Trong khi đó, dữ liệu dùng cho các ứng dụng thực tế thường không được như vậy. Nó được thu thập từ nhiều nguồn, chứa nhiều nhiễu do dữ liệu bị sai lệch hoặc bị thiếu do sự cố trong quá trình thu thập và thường không có cấu trúc nhất quán. Hơn thế, dữ liệu mới được cập nhật thường xuyên và nhãn của tập dữ liệu có thể không đồng đều và có thể cần thay đổi ví dụ như thêm, bớt hoặc chia nhỏ nhãn mỗi khi yêu cầu của dự án thay đổi, ngay cả khi mô hình đã được huấn luyện và triển khai. Việc dữ liệu được tạo ra liên tục bởi người dùng, hệ thống và dữ liệu của bên thứ ba khiến cho quá trình huấn luyện mô hình cần có cơ chế đặc thù để giảm thiểu rủi ro, cũng như tính bền bỉ của ứng dụng.&lt;/p&gt;
+
+&lt;p&gt;Bên cạnh đó, dữ liệu được sử dụng trong các ứng dụng thực tế cần được đảm bảo tuân theo các quy định chung và tôn trọng quyền riêng tư của người cung cấp.&lt;/p&gt;
+
+&lt;h2 id=&quot;dễ-hiểu-để-sử-dụng-dễ-bảo-trì&quot;&gt;Dễ hiểu, để sử dụng, dễ bảo trì&lt;/h2&gt;
+
+&lt;p&gt;Do đặc thù của môi trường nghiên cứu, khả năng có thể được diễn giải một cách tường minh của mô hình không quá quan trọng bởi các nhà nghiên cứu sẵn sàng bỏ ra rất nhiều thời gian để hiểu rõ ràng cách thức hoạt động của một phương pháp nào đó. Còn đối với giai đoạn triển khai thành ứng dụng thực tế, các mô hình này cần được hiểu ở mức độ nào đó một cách dễ dàng bởi các bên triển khai và nhất là người dùng cũng như phía quản lý mô hình kinh doanh, những người hầu như có ít hiểu biết về lĩnh vực này để họ tin tưởng vào mô hình được cung cấp và từ đó có thể nhận biết và báo cáo mỗi khi có sự cố xảy ra. Việc được báo cáo các sự cố sẽ giúp quá trình gỡ lỗi và cải thiện mô hình - vốn là quá trình quyết định sự sống còn của ứng dụng - có thể phát huy được tác dụng.&lt;/p&gt;
+
+&lt;h2 id=&quot;ứng-dụng-sử-dụng-machine-learning-và-ứng-dụng-truyền-thống&quot;&gt;Ứng dụng sử dụng Machine learning và ứng dụng truyền thống&lt;/h2&gt;
+
+&lt;p&gt;Vì ML là một phần của kỹ thuật phần mềm và phần mềm đã được sử dụng thành công trong sản xuất trong hơn nửa thế kỷ, một số người có thể thắc mắc tại sao ta không áp dụng các phương pháp hay nhất đã thử nghiệm trong kỹ thuật phần mềm và áp dụng chúng cho ML. Tuy nhiên do đặc thù của các ứng dụng dựa trên Machine learning, khi mà dữ liệu liên tục được thay đổi và ảnh hưởng trực tiếp vào hiệu năng của ứng dụng chứ không được tách rời như các ứng dụng phần mềm truyền thống, ta luôn có những thách thức riêng dành cho các loại ứng dụng này.&lt;/p&gt;
+
+&lt;p&gt;Trong các ứng dụng truyền thống, ta chỉ cần tập trung vào thử nghiệm cài đặt mã theo từng phiên bản thì với ML, ta cũng phải thử nghiệm và huấn luyện mô hình dựa trên các phiên bản dữ liệu của mình. Vấn đề được đặt ra là làm thế nào để biết một mẫu dữ liệu tốt hay xấu cho hệ thống sẵn có bởi không phải tất cả các mẫu dữ liệu đều có đóng góp tới việc cải thiện hiệu năng như nhau. Bên cạnh đó, việc sử dụng dữ liệu có sẵn một cách bừa bãi có thể ảnh hưởng đến hiệu suất của mô hình có sẵn và thậm chí khiến mô hình dễ bị tấn công nhiễm độc dữ liệu. Những vấn đề được liệt kê dưới đây được cho là những vấn đề mà các kỹ sư Machine learning thường gặp phải khi phát triển và triển khai ứng dụng của mình:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Kiểm tra dữ liệu: Đảm bảo tính đúng đắn và đánh giá tính hữu ích của bộ dữ liệu&lt;/li&gt;
+  &lt;li&gt;Kiểm soát phiên bản dữ liệu và mô hình: Lập chỉ mục phiên bản cho dữ liệu và mô hình, đảm bảo khả năng so sánh giữa hai phiên bản nhằm rút ra được những thay đổi nào được áp dụng và điều đó đóng góp như thế nào vào việc cải thiện chất lượng ứng dụng.&lt;/li&gt;
+  &lt;li&gt;Gắn nhãn dữ liệu: Đảm bảo có phương pháp hiệu quả để nhanh chóng gắn nhãn dữ liệu mới hoặc gắn nhãn lại dữ liệu hiện có cho mô hình mới&lt;/li&gt;
+  &lt;li&gt;Tích hợp CI/CD: Đảm bảo quá trình thử nghiệm diễn ra nhanh chóng và đảm bảo được mô hình đạt được mục tiêu kì vọng&lt;/li&gt;
+  &lt;li&gt;Triển khai: Đảm bảo có phương pháp hiệu quả để đóng gói và triển khai một mô hình mới hoặc thay thế một mô hình hiện có&lt;/li&gt;
+  &lt;li&gt;Nén mô hình: Đảm bảo có phương pháp để giảm kích cỡ một mô hình ML để phù hợp với các thiết bị tiêu dùng?&lt;/li&gt;
+  &lt;li&gt;Tối ưu hóa quá trình Inference: Đảm bảo có phương pháp hiệu quả để tăng tốc thời gian suy luận cho các mô hình từ đó giảm thiểu tối đa độ trễ&lt;/li&gt;
+  &lt;li&gt;Thiết bị cạnh: Phần cứng được thiết kế để chạy các thuật toán ML nhanh và với giá thành và chi phí vận hành nhỏ&lt;/li&gt;
+  &lt;li&gt;Quyền riêng tư: Cần có quy trình để sử dụng dữ liệu người dùng để đào tạo mô hình hiệu quả trong khi vẫn bảo vệ quyền riêng tư của họ&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><category term="Machine Learning Systems Design" /><summary type="html">Phần này dịch từ Note của so sánh cách triển khai Machine learning khi nghiên cứu và triển khai trên môi trường Production cũng như nêu các vấn đề cần quan tâm khi triển khai các ứng dụng machine learning ở môi trường thực tế.</summary></entry><entry><title type="html">Problem 2 - Các số Finobacci chẵn</title><link href="/blog/2020/even-fibonacci-numbers/" rel="alternate" type="text/html" title="Problem 2 - Các số Finobacci chẵn" /><published>2020-12-30T00:00:00+00:00</published><updated>2020-12-30T00:00:00+00:00</updated><id>/blog/2020/even-fibonacci-numbers</id><content type="html" xml:base="/blog/2020/even-fibonacci-numbers/">&lt;p&gt;&lt;a href=&quot;https://projecteuler.net/problem=2&quot; title=&quot;Problem 2 - Even Fibonacci numbers&quot;&gt;Problem 2 - Even Fibonacci numbers&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;đề-bài&quot;&gt;Đề bài&lt;/h2&gt;
+
+&lt;p&gt;Mỗi số trong dãy Fibonacci được tạo ra bằng cách cộng hai số liền trước với nhau. Ví dụ như bắt đầu từ 1 và 2, 10 số đầu tiên sẽ là:&lt;/p&gt;
+
+&lt;p&gt;1, 2, 3, 5, 8, 13, 21, 34, 55, 89, …&lt;/p&gt;
+
+&lt;p&gt;Hãy tính tổng các số trong dãy Fibonacci có giá trị chẵn và không vượt quá 4 triệu.&lt;/p&gt;
+
+&lt;h2 id=&quot;hướng-làm&quot;&gt;Hướng làm&lt;/h2&gt;
+
+&lt;p&gt;Tương tự như Problem 1 nếu bạn quá rảnh thì có thể ngồi tính từng số, kiểm tra số mới sinh ra có chẵn hay không rồi cộng vào.&lt;/p&gt;
+
+&lt;p&gt;Tuy nhiên chạy đến số 4 triệu chắc chẳng ai rảnh cho lắm nên ta có thể xem xét dãy và thấy rằng các số cần liệt kê là:&lt;/p&gt;
+
+&lt;p&gt;2, 8, 34, 144, ….&lt;/p&gt;
+
+&lt;p&gt;Các số này dường như có công thức chung là \(F_n = 4 * F{n - 3} + F_{n - 6}\)&lt;/p&gt;
+
+&lt;p&gt;Thế nên loại bỏ các số lẻ xen kẽ ta sẽ thu được dãy số mới theo quy luật \(F_n = 4 * F_{n - 3} + F_{n - 6}\)&lt;/p&gt;
+
+&lt;p&gt;Tất nhiên là nó sẽ nhanh hơn 1 tý nhưng mọi người vẫn phải chạy 1 cái vòng lặp lâu ơi là lâu nên ta xét tiếp đến cái gọi là &lt;a href=&quot;https://en.wikipedia.org/wiki/Fibonacci_number#Relation_to_the_golden_ratio&quot;&gt;Binet’s formula&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Khi đó số thứ n trong dãy Fibonacci sẽ được biểu diễn là:&lt;/p&gt;
+
+\[F_{n} = {\frac {\varphi ^{n}-\psi ^{n}}{\varphi -\psi }}={\frac {\varphi ^{n}-\psi ^{n}}{\sqrt {5}}}\]
+
+&lt;p&gt;Với&lt;/p&gt;
+
+\[\displaystyle \varphi = {\frac {1 + {\sqrt {5}}}{2}}\approx 1.61803 \ldots\]
+
+&lt;p&gt;Được gọi là &lt;a href=&quot;https://en.wikipedia.org/wiki/Golden_ratio&quot;&gt;Golden ratio&lt;/a&gt; (Tỉ lệ vàng)&lt;/p&gt;
+
+&lt;p&gt;Và&lt;/p&gt;
+
+\[{\displaystyle \psi = {\frac {1-{\sqrt {5}}}{2}}=1-\varphi =-{1 \over \varphi }\approx -0.61803C39887\ldots .}\]
+
+&lt;p&gt;Cái này trên wiki không ghi gì chắc không có tên nên thôi kệ.&lt;/p&gt;
+
+&lt;p&gt;Tại vì ở trên ta có thể thấy là các số cần cộng vào đều có chỉ số là bội của 3 thế nên ta có cái công thức sau để tính:&lt;/p&gt;
+
+\[\sum_{i=1}^{k}(\frac{\phi^{3i} -\psi^{3i}}{\sqrt{5}}) =\frac{1}{\sqrt{5}}({\sum_{i=1}{k}({\phi^3}^i)} - {\sum_{i=1}{k}({\psi^3}^i)}) =\frac{1}{\sqrt{5}}(\phi^3\frac{1-{\phi^3}^k}{1-\phi^3} - \psi^3\frac{1-{\psi^3}^k}{1-\psi^3})\]
+
+&lt;p&gt;Cái dấu bằng thứ 3 í là áp dụng công thức khai triển \(x^n - 1\) chắc ai cũng còn nhớ.&lt;/p&gt;
+
+&lt;p&gt;Vậy nên với \(F_n\) cho trước ta có thể tìm số thứ tự cuối n bằng công thức &lt;a href=&quot;https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers&quot;&gt;Fibonacci nghịch đảo&lt;/a&gt;.&lt;/p&gt;
+
+\[\log_{\phi}(\frac{F_{n}\sqrt{5} + \sqrt{5F_{n}^{2}-4}}{2})\]
+
+&lt;p&gt;Vậy nên sau đây là phần code bằng python:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;math&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;psi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;reverse_fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;sum_even&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;phi3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;psi3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;psi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;phi3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;psi3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;psi3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;psi3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;strip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reverse_fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;//&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum_even&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Code ăn cắp từ bài viết &lt;a href=&quot;https://medium.com/@TheZaki/project-euler-2-even-fibonacci-numbers-2219e9438970&quot;&gt;Project Euler #2: Even Fibonacci numbers&lt;/a&gt; của tác giả Oussama Zaki&lt;/strong&gt;&lt;/p&gt;</content><author><name></name></author><category term="Project Euler" /><summary type="html">Mỗi số trong dãy Fibonacci được tạo ra bằng cách cộng hai số liền trước với nhau. Ví dụ như bắt đầu từ 1 và 2, 10 số đầu tiên sẽ là 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ... Hãy tính tổng các số trong dãy Fibonacci có giá trị chẵn và không vượt quá 4 triệu.</summary></entry><entry><title type="html">Problem 1 - Bội số của 3 và 5</title><link href="/blog/2020/multiples_of_3_and_5/" rel="alternate" type="text/html" title="Problem 1 - Bội số của 3 và 5" /><published>2020-12-30T00:00:00+00:00</published><updated>2020-12-30T00:00:00+00:00</updated><id>/blog/2020/multiples_of_3_and_5</id><content type="html" xml:base="/blog/2020/multiples_of_3_and_5/">&lt;p&gt;&lt;a href=&quot;https://projecteuler.net/problem=1&quot; title=&quot;Problem 1 - Multiples of 3 and 5&quot;&gt;Problem 1 - Multiples of 3 and 5&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;đề-bài&quot;&gt;Đề bài&lt;/h2&gt;
+
+&lt;p&gt;Nếu chúng ta liệt kê tất cả các số tự nhiên dưới 10 là bội số của 3 hoặc 5, chúng ta sẽ nhận được 3, 5, 6 và 9. Tổng của các bội số này là 23.&lt;/p&gt;
+
+&lt;p&gt;Tìm tổng của tất cả các bội số của 3 hoặc 5 dưới 1000.&lt;/p&gt;
+
+&lt;h2 id=&quot;hướng-làm&quot;&gt;Hướng làm&lt;/h2&gt;
+
+&lt;p&gt;Có thể thấy rằng có một cách đơn giản rằng ta có thể duyệt tất cả các số từ 1 đến 1000 kiểm tra chúng là bội của 3 và 5 không, nếu có thì cộng chúng lại với nhau.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;or&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Tuy nhiên bài này trong Project Euler nên việc làm hùng hục như trâu húc mả vậy là không chấp nhận được.&lt;/p&gt;
+
+&lt;p&gt;Để ý một chút ta có thể thấy tổng các số nhỏ hơn 1000 và là bội số của 3 là:&lt;/p&gt;
+
+\[3 + 6 + 9 + 12 + ... + 999 = 3 * (1 + 2 + 3+ ... + 333)\]
+
+&lt;p&gt;Tương tự với 5 là:&lt;/p&gt;
+
+\[5 + 10 + 15 + ... +  995 = 5 * (1 + 2 + 3+ ... + 199)\]
+
+&lt;p&gt;Mà ta lại biết rằng:&lt;/p&gt;
+
+\[1 + 2 + 3 + 4 + ... + N = N * ( N + 1 ) / 2\]
+
+&lt;p&gt;Vậy nên ta có cách có vẻ có não hơn như sau:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;sum_divisble_by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum_divisble_by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum_divisble_by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum_divisble_by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Có xuất hiện việc trừ đi &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python sum_divisble_by(15, 999)&lt;/code&gt; là do các bội số của 15 sẽ được tính 2 lần.&lt;/p&gt;</content><author><name></name></author><category term="Project Euler" /><summary type="html">Nếu chúng ta liệt kê tất cả các số tự nhiên dưới 10 là bội số của 3 hoặc 5, chúng ta sẽ nhận được 3, 5, 6 và 9. Tổng của các bội số này là 23. Đề bài yêu cầu tìm tổng của tất cả các bội số của 3 hoặc 5 dưới 1000.</summary></entry><entry><title type="html">EfficientNet, cách tiếp cận mới về Model Scaling cho Convolutional Neural Networks</title><link href="/blog/2020/efficientnet/" rel="alternate" type="text/html" title="EfficientNet, cách tiếp cận mới về Model Scaling cho Convolutional Neural Networks" /><published>2020-11-14T00:00:00+00:00</published><updated>2020-11-14T00:00:00+00:00</updated><id>/blog/2020/efficientnet</id><content type="html" xml:base="/blog/2020/efficientnet/">&lt;p&gt;Kể từ khi AlexNet giành chiến thắng trong cuộc thi ImageNet năm 2012, CNNs (viết tắt của Mạng nơ ron tích chập) đã trở thành thuật toán de facto cho nhiều loại nhiệm vụ trong học sâu, đặc biệt là đối với thị giác máy tính. Từ năm 2012 đến nay, các nhà nghiên cứu đã thử nghiệm và cố gắng đưa ra các kiến trúc ngày càng tốt hơn để cải thiện độ chính xác của mô hình trong các nhiệm vụ khác nhau. Hôm nay, chúng ta sẽ đi sâu vào nghiên cứu mới nhất, EfficientNet, không chỉ tập trung vào việc cải thiện độ chính xác mà còn cả hiệu quả của các mô hình.&lt;/p&gt;
+
+&lt;h2 id=&quot;giới-thiệu-chung&quot;&gt;Giới thiệu chung&lt;/h2&gt;
+
+&lt;p&gt;Mạng Nơ-ron tích chập (Convolutional Neural Networks - ConvNets) thường được phát triển với ngân sách tài nguyên cố định và sau đó được thu phóng để có độ chính xác tốt hơn nếu có nhiều tài nguyên hơn. (Nguyên văn: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Convolutional Neural Networks (ConvNets) are commonly developed at a fixed resource budget, and then scaled up for better accuracy if more resources are available.&lt;/code&gt;). Bởi vậy nên nhóm tác giả &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Mingxing Tan&lt;/code&gt; và &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Quoc V. Le&lt;/code&gt; đã nghiên cứu một cách có hệ thống và nhận thấy rằng việc cân bằng một cách có hệ thống độ sâu, chiều rộng và độ phân giải mạng (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;network depth, width, and resolution&lt;/code&gt;) có thể mang đến hiệu suất tốt hơn. Phần sau đây sẽ trình bày lại vấn đề cần giải quyết, các khái niệm có liên quan cũng như hướng xử lý của các tác giả.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Trong bài viết, mình thử tìm trong một số tài liệu thì có một số dịch scaling là mở rộng quy mô tuy nhiên bản thân mình cảm thấy dịch là thu phóng (thu nhỏ và phóng to) sẽ sát nghĩa hơn bởi vậy trong bài viết này từ thu phóng sẽ được dùng để thay cho từ scaling trong nguyên văn.&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;thu-phóng-mô-hình-cnn&quot;&gt;Thu phóng mô hình CNN&lt;/h2&gt;
+
+&lt;p&gt;Trước khi thảo luận về “Việc thu phóng mô hình có nghĩa là gì?”, thì thường chúng ta hay tự hỏi rằng tại sao việc thu phóng mô hình lại quan trọng. Câu trả lời là, ta có thể nói rằng việc thu phóng thường được thực hiện để cải thiện độ chính xác của mô hình đối với một tác vụ nhất định, chẳng hạn như phân loại ImageNet. Việc thu phóng quy mô, nếu được thực hiện đúng cách, cũng có thể giúp cải thiện hiệu quả của một mô hình.&lt;/p&gt;
+
+&lt;h3 id=&quot;thu-phóng-mô-hình-có-nghĩa-là-gì-trong-bối-cảnh-của-cnn&quot;&gt;Thu phóng mô hình có nghĩa là gì trong bối cảnh của CNN?&lt;/h3&gt;
+
+&lt;p&gt;Như ta đã biết, có ba kích thước tỷ lệ của CNN: depth, width, and resolution:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Depth&lt;/code&gt; là độ sâu của mạng tương đương với số lớp trong đó.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Width&lt;/code&gt; là độ rộng của mạng. Ví dụ: một thước đo chiều rộng là số kênh trong lớp Conv&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Resolution&lt;/code&gt; là độ phân giải hình ảnh được chuyển đến CNN.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Hình bên dưới (từ chính bài báo) sẽ cho chúng ta ý tưởng rõ ràng về việc thu phóng mô hình có nghĩa là gì trên các kích thước khác nhau. Chúng ta cũng sẽ thảo luận chi tiết về những điều này ở ngay sau đây.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/efficientnet/1.png&quot; alt=&quot;efficientnet/1.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;thu-phóng-theo-chiều-sâu-depth-scaling&quot;&gt;Thu phóng theo chiều sâu (Depth Scaling)&lt;/h4&gt;
+
+&lt;p&gt;Thu phóng theo chiều sâu là một cách thông dụng nhất được sử dụng để thu phóng một mô hình CNN. Độ sâu có thể được thu phóng cũng như thu nhỏ bằng cách thêm hoặc bớt các lớp tương ứng. Ví dụ: ResNets có thể được mở rộng từ ResNet-50 đến ResNet-200 cũng như chúng có thể được thu nhỏ từ ResNet-50 thành ResNet-18. Tuy nhiên tại sao lại thu phóng quy mô độ sâu? Trực giác cho chúng ta ý nghĩ rằng một mạng lưới sâu hơn có thể nắm bắt các tính năng phong phú và phức tạp hơn, đồng thời khái quát tốt các tác vụ mới.&lt;/p&gt;
+
+&lt;p&gt;Tuy nhiên việc lạm dụng thu phóng theo chiều sâu có thể không cải thiện hiệu quả của mô hình, thậm chí có thể làm mô hình kém hiệu quả hơn so với mô hình ban đầu. Đúng là có một số lý do mà việc thêm nhiều lớp ẩn hơn sẽ cung cấp mức độ chính xác hơn cho mô hình. Tuy nhiên, điều này chỉ đúng với các tập dữ liệu lớn hơn, vì càng nhiều lớp với hệ số bước ngắn hơn sẽ trích xuất nhiều tính năng hơn cho dữ liệu đầu vào của bạn. Việc sử dụng một mô hình quá phức tạp với lượng dữ liệu không tương xứng, như ta đã biết, có thể gây ra hiện tượng Overfiiting. Thêm nữa, các mạng sâu hơn có xu hướng bị vanishing gradients và trở nên khó đào tạo. Vậy nên không phải lúc nào, thu phóng theo chiều sâu cũng là sự lựa chọn thích hợp để cải thiện mô hình CNN.&lt;/p&gt;
+
+&lt;h4 id=&quot;thu-phóng-theo-chiều-rộng-width-scaling&quot;&gt;Thu phóng theo chiều rộng (Width Scaling)&lt;/h4&gt;
+
+&lt;p&gt;Việc thu phóng theo chiều rộng của mạng (theo như trong hình minh họa ta có thể hiểu là thêm dữ liệu đầu vào) cho phép các lớp tìm hiểu các tính năng chi tiết hơn. Khái niệm này đã được sử dụng rộng rãi trong nhiều công trình như Wide ResNet và Mobile Net. Tuy nhiên, cũng như trường hợp tăng chiều sâu, tăng chiều rộng ngăn cản mạng học các tính năng phức tạp, dẫn đến giảm độ chính xác.&lt;/p&gt;
+
+&lt;h4 id=&quot;thu-phóng-theo-độ-phân-giải-resolution-scaling&quot;&gt;Thu phóng theo độ phân giải (Resolution Scaling)&lt;/h4&gt;
+
+&lt;p&gt;Theo một cách trực quan, chúng ta có thể nói rằng trong một hình ảnh có độ phân giải cao, các đặc trưng sẽ có độ chi tiết cao hơn và do đó hình ảnh có độ phân giải cao sẽ hoạt động tốt hơn. Độ phân giải đầu vào cao hơn cung cấp hình ảnh chi tiết hơn và do đó nâng cao khả năng suy luận của mô hình về các đối tượng nhỏ hơn và trích xuất các mẫu mịn hơn. Tuy nhiên cũng như các cách thu phóng trên, việc chỉ thu phóng theo độ phân giải không hề luôn luôn hiệu quả trong mọi trường hợp mà thậm chí nó còn có thể giảm độ chính xác của mô hình đi một cách nhanh chóng.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Kết luận: Thu phóng quy mô bất kỳ kích thước nào về chiều rộng, chiều sâu hoặc độ phân giải của mạng sẽ cải thiện độ chính xác, nhưng độ chính xác sẽ giảm đối với các mô hình lớn hơn.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;hướng-xử-lý-của-các-tác-giả&quot;&gt;Hướng xử lý của các tác giả&lt;/h3&gt;
+
+&lt;h4 id=&quot;công-thức-hóa-vấn-đề&quot;&gt;Công thức hóa vấn đề&lt;/h4&gt;
+
+&lt;p&gt;Lớp ConvNet thứ \(i\) có thể được định nghĩa là một hàm: \(Y_i = F_i(X_i)\), trong đó \(F_i\) là toán tử, \(Y_i\) là tensor đầu ra, \(X_i\) là tensor đầu vào, với kích thước tensor sẽ là: \(\langle H_i, W_i, C_i \rangle\), trong đó \(H_i\) và \(W_i\) là spatial dimension và \(C_i\) là channel dimension. Một ConvNet N có thể được biểu diễn bằng danh sách các layer gồm:&lt;/p&gt;
+
+\[N = F_k \odot F_{k-1} \odot ...... \odot F_1(X_1) = \bigodot_{j=1...k} F_j(X_1)\]
+
+&lt;p&gt;Trong thực tế, các lớp ConvNet thường được phân chia thành nhiều stage và tất cả các lớp trong mỗi stage đều có chung một kiến trúc: ví dụ: ResNet (He et al., 2016) có năm stage và tất cả các lớp trong mỗi stage có cùng một kiểu phức hợp ngoại trừ lớp đầu tiên thực hiện down sampling Do đó, chúng ta có thể định nghĩa Mạng Conv là:&lt;/p&gt;
+
+\[N = \bigodot_{j=1...s} F_i^{L_i} X_{\langle H_i,W_i,C_i \rangle}\]
+
+&lt;p&gt;trong đó \(F_i^{L_i}\) biểu thị lớp \(F_i\) được lặp lại \(L_i\) lần trong stage \(i\) \(\langle H_i, W_i, C_i \rangle\) biểu thị kích thước của tensor đầu vào \(X\) của lớp \(i\)&lt;/p&gt;
+
+&lt;p&gt;Không giống như các thiết kế ConvNet thông thường chủ yếu tập trung vào việc tìm kiếm kiến trúc lớp tốt nhất \(F_i\), việc thu phóng mô hình cố gắng thu phóng chiều dài mạng (\(L_i\)), chiều rộng (\(C_i\)) và / hoặc độ phân giải (\(H_i, W_i\)) mà không thay đổi \(F_i\) được xác định trước trong mạng cơ sở. Bằng cách giữ nguyên hàm \(F_i\), việc thu phóng mô hình đơn giản hóa vấn đề về thiết kế đối với tài nguyên hạn chế. Tuy nhiên vẫn có rất nhiều khả năng có thế xảy ra bởi chúng ta có thể thay đổi cả 3 chiều của mỗi lớp với mỗi mức độ khác nhau. Nhằm thu hẹp không gian tìm kiếm, nhóm tác giả đã hạn chế rằng tất cả các lớp phải được thu phóng đồng nhất với tỷ lệ không đổi. Mục tiêu của họ là tối đa hóa độ chính xác của mô hình cho bất kỳ lượng hạn chế tài nguyên nhất định nào, vấn đề này có thể được xem như một vấn đề tối ưu hóa.&lt;/p&gt;
+
+\[\max_{d,w,r} Accuracy(N(d, w, r))\]
+
+\[N(d, w, r) = \bigodot_{j=1...s} {\widehat F}_i^{d . {\widehat L }_i} X_{\langle r. \widehat H_i, r. \widehat W_i, r. \widehat C_i \rangle}\]
+
+&lt;p&gt;Trong đó với \(w, d, r\) là các hệ số để chia tỷ lệ chiều rộng, chiều sâu và độ phân giải của mạng; \(\widehat H_i, \widehat W_i, \widehat C_i\) là các tham số được xác định trước trong mạng cơ sở.&lt;/p&gt;
+
+&lt;h3 id=&quot;compound-scaling&quot;&gt;Compound Scaling&lt;/h3&gt;
+
+&lt;p&gt;Theo nhóm tác giả quan sát các chiều của các mô hình thường không thu nhỏ/thu phóng đọc lập với nhau. Bởi vậy nên, theo trực giác của bản thân, nhóm tác giả cho rằng chúng ta cần phối hợp và cân bằng các kích thước tỷ lệ khác nhau hơn là chia tỷ lệ một chiều thông thường.&lt;/p&gt;
+
+&lt;p&gt;Để xác thực trực giác của mình, nhóm tác giả so sánh việc thu phóng theo chiều rộng và theo các độ sâu cũng như độ phân giải mạng ở các mức độ khác nhau.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/efficientnet/2.png&quot; alt=&quot;efficientnet/2.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Từ kết quả được thể hiện trong hình trên, nhóm tác giả kết luận rằng:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Để đạt được độ chính xác và hiệu quả tốt hơn, điều quan trọng là phải cân bằng tất cả các kích thước của chiều rộng, chiều sâu và độ phân giải mạng trong quá trình thu phóng quy mô ConvNet&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Trong bài báo này, nhóm tác giả đề xuất một phương pháp thu phóng phức hợp mới, sử dụng hệ số kép φ để thu phóng đồng nhất chiều rộng, độ sâu và độ phân giải của mạng theo cách có nguyên tắc:&lt;/p&gt;
+
+\[d = α^φ \\\]
+
+\[w = β^φ \\\]
+
+\[r = γ^φ \\\]
+
+\[st α · β^2 · γ^2 ≈ 2\]
+
+\[α ≥ 1, β ≥ 1, γ ≥ 1\]
+
+&lt;p&gt;Trrong đó :&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;d, w, r lần lượt là độ rộng, độ sâu và độ phân giải của mạng&lt;/li&gt;
+  &lt;li&gt;α, β, γ là các hằng số có thể được xác định bằng small grid search.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Theo trực giác, φ là hệ số do người dùng chỉ định để kiểm soát số lượng tài nguyên khác có sẵn để thu phóng mô hình, trong khi α, β, γ chỉ định cách gán các tài nguyên bổ sung này cho độ rộng, độ sâu và độ phân giải của mạng tương ứng. Đáng chú ý, FLOPS của một op tích hợp thông thường tỷ lệ với \(d, w^2, r^2\), tức là, độ sâu mạng tăng gấp đôi sẽ tăng gấp đôi FLOPS, nhưng tăng gấp đôi độ rộng hoặc độ phân giải của mạng sẽ tăng FLOPS lên bốn lần. Vì các hoạt động tích phân thường chiếm ưu thế trong chi phí tính toán trong ConvNets, nên việc thu phóng Mạng Conv với phương trình 3 sẽ làm tăng tổng FLOPS khoảng \((α · β^2 · γ^2 )^φ\). Trong bài báo này, chúng tôi ràng buộc \(α · β^2 · γ^2 ≈ 2\) sao cho với bất kỳ new mới nào, tổng FLOPS sẽ tăng xấp xỉ lên \(2^φ\)&lt;/p&gt;
+
+&lt;h3 id=&quot;kiến-trúc-mạng-efficientnet&quot;&gt;Kiến trúc mạng EfficientNet&lt;/h3&gt;
+
+&lt;p&gt;Để chứng minh tốt hơn hiệu quả của phương pháp thu phóng quy mô của mình, nhóm tác giả cũng đã phát triển một mạng cơ sở kích thước di động, được gọi là EfficientNet.&lt;/p&gt;
+
+&lt;p&gt;Lấy cảm hứng từ các nghiên cứu trước, nhóm tác giả phát triển mạng cơ sở của mình bằng cách tận dụng tìm kiếm kiến trúc no-ron đa mục tiêu để tối ưu hóa cả độ chính xác và FLOPS. Cụ thể, nhóm tác giả sử dụng cùng một không gian với phương pháp được mô tả trong MnasNet: Platform-aware neural architecture search for mobile và sử dụng \(ACC (m) × [F LOP S (m) / T]^w\) làm mục tiêu tối ưu hóa, trong đó \(ACC (m)\) và \(FLOPS(m)\) biểu thị độ chính xác và FLOPS của mô hình m, \(T\) là mức FLOPS mục tiêu và \(w = -0,07\) là siêu tham số để kiểm soát sự cân bằng giữa độ chính xác và FLOPS. Tuy nhiên không giống nghiên cứu trên, ở đây nhóm tác giả tối ưu hóa FLOPS thay vì độ trễ vì họ không nhắm mục tiêu bất kỳ thiết bị phần cứng cụ thể nào. Từ đó nhóm tác giả tạo ra một mạng hiệu quả, thứ được đặt tên đặt tên là EfficientNet-B0.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/efficientnet/3.png&quot; alt=&quot;efficientnet/3.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Bắt đầu từ mô hình cơ sở EfficientNet-B0, nhóm tác giả áp dụng phương pháp thu phóng phức hợp của mình để thu phóng quy mô với hai bước bao gồm:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Đặt cố định giá trị của \(φ\) bằng 1, nhóm tác giả thu được bộ giá trị tối ưu \(α = 1,2, β = 1,1, γ = 1,15,\) theo ràng buộc của \(α · β^2 · γ^2 ≈ 2\)&lt;/li&gt;
+  &lt;li&gt;Cố định \(α, β, γ\) dưới dạng các hằng số và thu phóng mạng cơ sở với các \(φ\) khác nhau từ đó thu được để thu được từ EfficientNet-B1 đến EfficientNet-B1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;thực-nghiệm&quot;&gt;Thực nghiệm&lt;/h3&gt;
+
+&lt;p&gt;Hai phần sau đây liệt kê kết quả một số thí nghiệm được nhóm tác giả thực hiện. Để tìm hiểu rõ hơn về toàn bộ các thí nghiệm bao gồm các thức tiến hành, kết quả, nhận định, …. mọi người có thể tìm hiểu thêm ở trong bài báo.&lt;/p&gt;
+
+&lt;h3 id=&quot;thu-phóng-quy-mô-mobilenets-và-resnet&quot;&gt;Thu phóng quy mô MobileNets và ResNet&lt;/h3&gt;
+
+&lt;p&gt;Để kiểm chứng tính hiệu quả của mô hình, trước tiên nhóm tác giả áp dụng phương pháp thu phóng quy mô của mình cho MobileNets và ResNet được sử dụng rộng rãi. Bảng sau đây hiển thị kết quả ImageNet của việc thu phóng chúng theo các cách khác nhau. So với các phương pháp chia tỷ lệ đơn chiều khác, phương pháp thu phóng phức hợp của nhóm tác giả cải thiện độ chính xác trên tất cả các mô hình này.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/efficientnet/4.png&quot; alt=&quot;efficientnet/4.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;kết-quả-thu-được-khi-sử-dụng-trên-imagenet&quot;&gt;Kết quả thu được khi sử dụng trên ImageNet&lt;/h3&gt;
+
+&lt;p&gt;Bảng sau cho thấy hiệu suất của tất cả các mô hình EfficientNet được thu phóng từ cùng một mô hình EfficientNet-B0 khi huấn luyện trên ImageNet. Các mô hình EfficientNet của nhóm tác giả thường sử dụng thứ tự các tham số và FLOPS ít hơn so với các ConvNets khác với độ chính xác tương tự. Đặc biệt, EfficientNet-B7 của chúng tôi đạt độ chính xác top1 84,3% với thông số 66M và 37B FLOPS, chính xác hơn nhưng nhỏ hơn 8,4 lần so với GPipe tốt nhất trước đây. Những lợi ích này đến từ cả kiến trúc tốt hơn, thu phóng quy mô tốt hơn và cài đặt đào tạo tốt hơn được tùy chỉnh cho EfficientNet.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/efficientnet/5.png&quot; alt=&quot;efficientnet/5.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;tổng-kết&quot;&gt;Tổng kết&lt;/h2&gt;
+
+&lt;p&gt;Bài viết này trình bày lại bài báo về EfficientNet và các kiến thức liên quan dựa trên cơ sở tự tìm hiểu thêm cũng như giới thiệu một ví dụ nhỏ sử dụng phần cài đặt sẵn của kiến trúc mạng này. Có thể thấy rằng các kiến trúc mạng mới nhận được rất nhiều sự quan tâm và đã được cài đặt trên các framework Machine learining phổ biến hiện nay. Tuy nhiên để có khả năng tự đánh giá và sửa đổi cũng như cải tiến để phù hợp với bài toán của bản thân, người dùng vẫn cần tìm hiểu kĩ về bản chất và cách hoạt động của các phương pháp này. Bài viết đến đây là kết thúc cảm ơn mọi người đã giành thời gian đọc.&lt;/p&gt;
+
+&lt;h2 id=&quot;tài-liệu-tham-khảo&quot;&gt;Tài liệu tham khảo&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1905.11946&quot;&gt;https://arxiv.org/abs/1905.11946&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://ai.googleblog.com/2019/05/efficientnet-improving-accuracy-and.html&quot;&gt;https://ai.googleblog.com/2019/05/efficientnet-improving-accuracy-and.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/qubvel/efficientnet&quot;&gt;https://github.com/qubvel/efficientnet&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><category term="Đọc paper cùng bạn" /><summary type="html">Kể từ khi AlexNet giành chiến thắng trong cuộc thi ImageNet năm 2012, CNNs (viết tắt của Mạng nơ ron tích chập) đã trở thành thuật toán de facto cho nhiều loại nhiệm vụ trong học sâu, đặc biệt là đối với thị giác máy tính. Từ năm 2012 đến nay, các nhà nghiên cứu đã thử nghiệm và cố gắng đưa ra các kiến trúc ngày càng tốt hơn để cải thiện độ chính xác của mô hình trong các nhiệm vụ khác nhau. Hôm nay, chúng ta sẽ đi sâu vào nghiên cứu mới nhất, EfficientNet, không chỉ tập trung vào việc cải thiện độ chính xác mà còn cả hiệu quả của các mô hình.</summary></entry></feed>

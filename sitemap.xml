@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>/blog/2020/efficientnet/</loc>
+<lastmod>2020-11-14T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>/blog/2020/even-fibonacci-numbers/</loc>
+<lastmod>2020-12-30T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>/blog/2020/multiples_of_3_and_5/</loc>
+<lastmod>2020-12-30T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>/blog/2021/machine-learning-in-production/</loc>
+<lastmod>2021-02-17T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>/blog/2021/MLP-Mixer/</loc>
+<lastmod>2021-05-07T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>/</loc>
+</url>
+<url>
+<loc>/categories</loc>
+</url>
+</urlset>
