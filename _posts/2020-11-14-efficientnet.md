@@ -1,5 +1,5 @@
 ---
-title: EfficientNet: Cách tiếp cận mới về Model Scaling cho Convolutional Neural Networks
+title: EfficientNet, cách tiếp cận mới về Model Scaling cho Convolutional Neural Networks
 categories:
   - Đọc paper cùng bạn
 
