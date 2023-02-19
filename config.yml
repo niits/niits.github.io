@@ -1,0 +1,102 @@
+baseURL: "https://trungtd.me/"
+title: "Trang chủ"
+paginate: 5
+theme: PaperMod
+
+enableInlineShortcodes: true
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+enableEmoji: true
+# googleAnalytics: UA-123-45
+
+minify:
+    disableXML: true
+    minifyOutput: true
+
+languages:
+    en:
+        languageName: "Vietnamese"
+        weight: 5
+        menu:
+            main:
+                - name: Tìm kiếm
+                  url: search/
+                  weight: 10
+                - name: Chủ đề
+                  url: categories/
+                  weight: 10
+                - name: Các project nho nhỏ
+                  url: projects/
+                  weight: 15
+outputs:
+    home:
+        - HTML
+        - RSS
+        - JSON
+
+params:
+    env: production # to enable google analytics, opengraph, twitter-cards and schema.
+    description: "Ti tỉ thứ linh tinh"
+    author: Trần Đức Trung
+    # author: ["Me", "You"] # multiple authors
+
+    defaultTheme: auto
+    disableThemeToggle: true
+    ShowShareButtons: false
+    ShowReadingTime: true
+    # disableSpecial1stPost: true
+    displayFullLangName: true
+    ShowPostNavLinks: true
+    ShowBreadCrumbs: true
+    ShowCodeCopyButtons: true
+    ShowToc: true
+    comments: false
+    images: ["papermod-cover.png"]
+
+
+    homeInfoParams:
+        Title: "Ti tỉ thứ linh tinh"
+        Content: >
+            Chào mọi người. Mình tên là Trần Đức Trung, hiện đang làm tại Sun*
+
+            Công việc chủ yếu của mình tại công ty là phát triển các ứng dụng có sử dụng Trí tuệ nhân tạo mà chủ yếu phần lớn là Thị giác máy. Mình cũng đã thu được khá nhiều kinh nghiệm khi tham gia một số dự án phát triển ứng dụng web cũng như có được một sô kiến thức liên quan đến DevOps nhờ quá trình tự học.
+
+            Đây là chỗ tổng hợp những gì đã mình tự học và tự chơi ở nhà.
+    socialIcons:
+        - name: github
+          url: "https://github.com/niits"
+        - name: linkedin
+          url: "https://www.linkedin.com/in/niits/"
+        - name: RsS
+          url: "index.xml"
+
+
+taxonomies:
+    category: categories
+    tag: tags
+    series: series
+
+markup:
+    goldmark:
+        renderer:
+            unsafe: true
+
+privacy:
+    vimeo:
+        disabled: false
+        simple: true
+
+    twitter:
+        disabled: false
+        enableDNT: true
+        simple: true
+
+    instagram:
+        disabled: false
+        simple: true
+
+    youtube:
+        disabled: false
+        privacyEnhanced: true
