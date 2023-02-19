@@ -23,12 +23,12 @@ Machine Learning
 
 ## WORK EXPERIENCE
 
-### Machine Learning Engineer, AI Research Department, R&D Unit Feb, Sun* Vietnam -  2021 / Present
+### Machine Learning Engineer, AI Research Department, R&D Unit, Sun* Vietnam -  Feb, 2021 / Present
 
 - Participated in developing internal/customer products and trained one new employee to help them archive
 necessary skills as a machine learning engineer.
 
-### Server-side Engineer, Product Development Department. R&D Unit Sun* Vietnam, Hanoi - June 2020 / Feb 2021
+### Server-side Engineer, Product Development Department. R&D Unit Sun* Vietnam - June 2020 / Feb 2021
 
 - Participate in the installation of functions of the internal CI/CD system - Sun*CI, thereby acquiring
 knowledge related to software development, especially the development of web services.
