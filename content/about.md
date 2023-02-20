@@ -25,8 +25,11 @@ Machine Learning
 
 ### Machine Learning Engineer, AI Research Department, R&D Unit, Sun* Vietnam -  Feb, 2021 / Present
 
-- Participated in developing internal/customer products and trained one new employee to help them archive
-necessary skills as a machine learning engineer.
+- Participate in developing internal/customer products.
+- Create tools to help the development team make the most out of the available infrastructure.
+- Research, survey technology, tools and directly participate in the implementation of Deep Learning models.
+- Participate in the design of systems that use data, and design data processing pipelines to ensure automation, high performance and reliability.
+- Train new employees to help them archive necessary skills as a Machine Learning Engineer.
 
 ### Server-side Engineer, Product Development Department. R&D Unit Sun* Vietnam - June 2020 / Feb 2021
 

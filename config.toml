@@ -1,6 +1,6 @@
 baseURL = 'https://trungtd.me/'
 languageCode = 'vi-vn'
-title = 'TrungTD'
+title = 'tran.duc.trung'
 theme = "hugo-theme-console"
 
 
@@ -10,8 +10,6 @@ theme = "hugo-theme-console"
 
   # Set the animation style -- https://animate.style/
   # To disable animations, please remove or comment animationStyle parameter
-  animateStyle = "animated zoomIn fast"
-
   [[params.navlinks]]
   name = "about/"
   url = "about/"
@@ -24,3 +22,7 @@ theme = "hugo-theme-console"
   [[params.navlinks]]
   name = "projects/"
   url = "projects/"
+
+  [[params.navlinks]]
+  name = "books/"
+  url = "books/"
