@@ -1,0 +1,27 @@
+{{ define "main" }}
+<h1>{{ .Page.Title }}</h1>
+{{ .Content }}
+<style>
+.book-title {
+    text-align: center;
+}
+</style>
+<div class="image-grid">
+    {{ range sort .Data.Pages "Date" "desc" }}
+        {{ if and (isset .Params "image") .Params.image }}
+        <div>
+            <a href="{{ .Permalink }}" title="{{ .Title }}">
+            {{ $image := .Page.Resources.GetMatch .Params.image }}
+            {{ with $image }}
+                {{ $thumb := .Resize "400x" }}
+                <img src="{{ $thumb.RelPermalink }}" alt="{{ .Title }}" class="img-responsive">
+            {{end}}
+            </a>
+            <h3 class="book-title">
+                <span>{{ .Title }}</span> - <span>{{ .Params.author }}</span>
+            </h3>
+        </div>
+        {{ end }}
+    {{ end }}
+</div>
+{{ end }}
