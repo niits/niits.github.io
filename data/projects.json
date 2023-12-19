@@ -1,0 +1,15 @@
+{
+  "list":
+    [
+      {
+        "name": "Kaniko Builder dành cho BentoML",
+        "url": "https://github.com/niits/bentoml-kaniko",
+        "desc": "BentoML có sẵn command để đóng gói service thành dạng container tuy nhiên việc dùng nó chung với các hệ thống CI/CD hơi bất tiện, repo này sẽ tùy biến một chút để build các image với Kaniko"
+      },
+      {
+        "name": "Sorting bboxes",
+        "url": "https://github.com/niits/sorting-bboxes",
+        "desc": "Sắp xếp bouding boxes thành từng dòng, ngoài ra có thể bổ sung thêm một vài hàm hỗ trợ cho bài toán OCR trong tương lai"
+      }
+    ]
+}

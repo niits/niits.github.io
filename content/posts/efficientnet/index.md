@@ -2,7 +2,7 @@
 title: EfficientNet - Cách tiếp cận mới về Model Scaling cho Convolutional Neural Networks
 date: 2022-03-08T23:23:47+07:00
 categories:
-  - Đọc paper cùng bạn
+  - Note khi đọc paper
 excerpt: Kể từ khi AlexNet giành chiến thắng trong cuộc thi ImageNet năm 2012, CNNs (viết tắt của Mạng nơ ron tích chập) đã trở thành thuật toán de facto cho nhiều loại nhiệm vụ trong học sâu, đặc biệt là đối với thị giác máy tính. Từ năm 2012 đến nay, các nhà nghiên cứu đã thử nghiệm và cố gắng đưa ra các kiến trúc ngày càng tốt hơn để cải thiện độ chính xác của mô hình trong các nhiệm vụ khác nhau. Hôm nay, chúng ta sẽ đi sâu vào nghiên cứu mới nhất, EfficientNet, không chỉ tập trung vào việc cải thiện độ chính xác mà còn cả hiệu quả của các mô hình.
 layout: post
 ---

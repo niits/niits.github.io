@@ -4,7 +4,7 @@ date: 2021-05-07T23:23:47+07:00
 language: vi
 title: MLP-Mixer - Hướng giải quyết các bài toán Computer Vision mới bên cạnh CNN và Transformer
 categories:
-  - Đọc paper cùng bạn
+  - Note khi đọc paper
 
 excerpt: Có thể nói rằng Convolutional Neural Network hay CNN đã và đang được cho là mô hình vô cùng phù hợp cho thị giác máy tính. Bên cạnh đó các mạng dựa trên cơ chế attention, chẳng hạn như Vision Transformer, cũng dần được quan tâm và sử dụng nhiều hơn. Tuy vậy trong paper mới được publish của mình với tên gọi MLP-Mixer, nhóm Google Brain  ở Zurich và Berlin đã tuyên bố rằng mặc dù các kiến trúc trên đều mang lại hiệu xuất cũng như độ chính xác cao, việc sử dụng chúng đôi khi là không cần thiết. Vậy nên trong bài viết này, chúng ta sẽ cùng tìm hiểu cách thức hoạt động của kiến trúc này cũng như sự khác biệt của nó với các kiến trúc mạng khác.
 

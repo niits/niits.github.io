@@ -1,15 +1,15 @@
 baseURL = 'https://trungtd.me/'
 languageCode = 'vi-vn'
-title = 'tran.duc.trung'
-theme = "hugo-theme-console"
-
+title = 'Ti tỉ thứ linh tinh'
+theme = "cactus"
 
 [params]
-  # Cutting off the page title to two chars for mobile (console-demo -> co)
+  description = "Machine Learning Engineer @ Sun*. \nNội dung blog này cũng tập trung vào Cloud Computing và Machine Learning nhưng sẽ ngắn hơn và ít formal hơn bên Viblo. Bên cạnh đó thì thỉnh thoảng sẽ có chút review sách và game nữa nên mình nghĩ rằng nó giống nhật ký hơn là trang blog :v"
+  mainSection = "posts"
+  mainSectionTitle = "Bài viết mới nhất"
   titleCutting = true
 
-  # Set the animation style -- https://animate.style/
-  # To disable animations, please remove or comment animationStyle parameter
+  mathjax = true
   [[params.navlinks]]
   name = "about/"
   url = "about/"
@@ -18,11 +18,24 @@ theme = "hugo-theme-console"
   name = "posts/"
   url = "posts/"
 
+  [[params.social]]
+    name = "github"
+    link = "https://github.com/niits"
 
-  [[params.navlinks]]
-  name = "projects/"
-  url = "projects/"
+  [[params.social]]
+    name = "email"
+    link = "trungtdxz@gmail.com" # no need for "mailto:" at the start
 
-  [[params.navlinks]]
-  name = "books/"
-  url = "books/"
+  [[params.social]]
+    name = "linkedin"
+    link = "https://www.linkedin.com/in/niits/"
+
+  [[menu.main]]
+  name = "Bài viết"
+  url = "/posts"
+  weight = 1
+
+  [[menu.main]]
+  name = "Chủ đề"
+  url = "/categories"
+  weight = 2
