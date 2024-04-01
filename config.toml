@@ -4,7 +4,11 @@ title = 'Ti tỉ thứ linh tinh'
 theme = "cactus"
 
 [params]
-  description = "Machine Learning Engineer @ Sun*. \nNội dung blog này cũng tập trung vào Cloud Computing và Machine Learning nhưng sẽ ngắn hơn và ít formal hơn bên Viblo. Bên cạnh đó thì thỉnh thoảng sẽ có chút review sách và game nữa nên mình nghĩ rằng nó giống nhật ký hơn là trang blog :v"
+  description = """
+Hiện mình đang làm các công việc của `r'(Data|ML|BE|Analytics) Engineer'` :v
+
+Nội dung blog này cũng tập trung vào Cloud Computing và Machine Learning nhưng thỉnh thoảng sẽ có chút review sách và game nữa nên mình nghĩ rằng nó giống nhật ký hơn là trang blog :v
+"""
   mainSection = "posts"
   mainSectionTitle = "Bài viết mới nhất"
   titleCutting = true
@@ -22,10 +26,6 @@ theme = "cactus"
   [[params.social]]
     name = "github"
     link = "https://github.com/niits"
-
-  [[params.social]]
-    name = "email"
-    link = "trungtdxz@gmail.com" # no need for "mailto:" at the start
 
   [[params.social]]
     name = "linkedin"
