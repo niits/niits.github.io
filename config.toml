@@ -8,6 +8,7 @@ theme = "cactus"
   mainSection = "posts"
   mainSectionTitle = "Bài viết mới nhất"
   titleCutting = true
+  showAllPostsArchive = true
 
   mathjax = true
   [[params.navlinks]]
