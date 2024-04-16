@@ -4,6 +4,8 @@ title = 'Ti tỉ thứ linh tinh'
 theme = "cactus"
 
 [params]
+  languageCode = "vi"
+
   description = """
 Hiện mình đang làm các công việc của `r'(Data|ML|BE|Analytics) Engineer'` :v
 
