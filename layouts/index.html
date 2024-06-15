@@ -4,7 +4,7 @@
     {{ .Site.Params.description | $.Page.RenderString }}
   {{ end }}
   {{ if isset .Site.Params "social" }}
-      <p>Bạn có thể tìm thấy mình tại
+      <span>Nếu bạn muốn liên hệ với mình, bạn có thể tìm thấy mình trên
       {{ $length := (len .Site.Params.social) }}
       {{ range $index, $elem := .Site.Params.social}}
       {{ if eq $elem.name "email" }}
@@ -32,7 +32,7 @@
           {{- print "." -}}
         {{ end }}
       {{ end }}
-      </p>
+      </span>
   {{ end }}
   {{ partial "optional-about.html" . }}
   </section>
