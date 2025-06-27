@@ -1,39 +1,47 @@
-baseURL: 'https://trungtd.me/'
-languageCode: 'vi-vn'
-title: 'Ti tỉ thứ linh tinh'
-theme: 'cactus'
+baseURL: "https://trungtd.me/"
+languageCode: "vi-vn"
+title: "Ti tỉ thứ linh tinh"
+theme: "wisdom"
 
 params:
-  languageCode: 'vi'
+  languageCode: "vi"
   description: |
     Hiện mình đang làm các công việc của `r'(Data|ML|BE|Analytics) Engineer'`
 
-    Nội dung blog này cũng tập trung vào Machine Learning nhưng thỉnh thoảng sẽ có chút review sách và game nữa nên mình nghĩ rằng nó giống nhật ký hơn là trang blog
-  mainSection: 'posts'
-  mainSectionTitle: 'Bài viết mới nhất'
+    Nội dung blog này cũng tập trung vào Machine Learning nhưng thỉnh thoảng sẽ có chút review sách và game nữa nên mình nghĩ rằng nó giống nhật ký hơn là trang blog.
+
+  mainSection: "posts"
+  mainSectionTitle: "Bài viết mới nhất"
   titleCutting: true
   showAllPostsArchive: true
   mathjax: true
   navlinks:
-    - name: 'about/'
-      url: 'about/'
-    - name: 'posts/'
-      url: 'posts/'
+    - name: "about/"
+      url: "about/"
+    - name: "posts/"
+      url: "posts/"
 
   social:
-    - name: 'github'
-      link: 'https://github.com/niits'
-    - name: 'linkedin'
-      link: 'https://www.linkedin.com/in/niits/'
+    - name: "github"
+      link: "https://github.com/niits"
+    - name: "linkedin"
+      link: "https://www.linkedin.com/in/niits/"
 
 menu:
   main:
-    - name: 'Bài viết'
-      url: '/posts'
+    - name: "Bài viết"
+      url: "/posts"
       weight: 1
-    - name: 'Chủ đề'
-      url: '/categories'
+    - name: "Chủ đề"
+      url: "/categories"
       weight: 2
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
+ignoreLogs: ['warning-goldmark-raw-html']
+
 services:
   googleAnalytics:
     ID: G-0378TMH2BM
