@@ -6,7 +6,7 @@ theme: "wisdom"
 params:
   languageCode: "vi"
   description: |
-    Hiện mình đang làm các công việc của `r'(Data|ML|BE|Analytics) Engineer'`
+    Hiện mình đang làm các công việc của ~~(Data|ML|BE|Analytics) Engineer~~ Data Scientist.
 
     Nội dung blog này cũng tập trung vào Machine Learning nhưng thỉnh thoảng sẽ có chút review sách và game nữa nên mình nghĩ rằng nó giống nhật ký hơn là trang blog.
 
