@@ -1,5 +1,4 @@
 ---
-title: "Efficientnet"
 date: 2021-02-17T23:23:47+07:00
 
 title: Machine learning trên môi trường Production
