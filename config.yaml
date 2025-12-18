@@ -3,6 +3,10 @@ languageCode: "vi-vn"
 title: "Ti tỉ thứ linh tinh"
 theme: "wisdom"
 
+caches:
+  images:
+    dir: :cacheDir/images
+
 params:
   languageCode: "vi"
   description: |
