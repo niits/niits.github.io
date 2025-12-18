@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="vi">
+    <meta name="language" content="Vietnamese">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    {{ partial "head" . }}
+</head>
+<body>
+    {{ partial "header" . }}
+    <main role="main">
+        {{ block "main" . }}{{ end }}
+    </main>
+    {{ partial "footer" . }}
+</body>
+</html>

@@ -1,0 +1,35 @@
+{{ $paginator := .Paginator }}
+
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="pagination" role="navigation" aria-label="Phân trang">
+  <ul class="pagination-list">
+    {{ if $paginator.HasPrev }}
+    <li>
+      <a href="{{ $paginator.Prev.URL }}" class="pagination-link" rel="prev" aria-label="Trang trước">
+        ← Trang trước
+      </a>
+    </li>
+    {{ else }}
+    <li>
+      <span class="pagination-link disabled">← Trang trước</span>
+    </li>
+    {{ end }}
+    
+    <li class="pagination-info">
+      <span>Trang {{ $paginator.PageNumber }} / {{ $paginator.TotalPages }}</span>
+    </li>
+    
+    {{ if $paginator.HasNext }}
+    <li>
+      <a href="{{ $paginator.Next.URL }}" class="pagination-link" rel="next" aria-label="Trang tiếp">
+        Trang tiếp →
+      </a>
+    </li>
+    {{ else }}
+    <li>
+      <span class="pagination-link disabled">Trang tiếp →</span>
+    </li>
+    {{ end }}
+  </ul>
+</nav>
+{{ end }}

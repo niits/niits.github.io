@@ -1,7 +1,14 @@
 baseURL: "https://trungtd.me/"
-languageCode: "vi-vn"
+languageCode: "vi-VN"
+defaultContentLanguage: "vi"
 title: "Ti tỉ thứ linh tinh"
 theme: "wisdom"
+
+languages:
+  vi:
+    languageCode: "vi-VN"
+    languageName: "Tiếng Việt"
+    weight: 1
 
 caches:
   images:
@@ -19,11 +26,20 @@ params:
   titleCutting: true
   showAllPostsArchive: true
   mathjax: true
+  showReadTime: false
+  show_updated: true
+  
+  # SEO
+  author: "Trung TD"
+  keywords: ["Machine Learning", "Data Science", "AI", "Trí tuệ nhân tạo", "Học máy", "Blog công nghệ"]
+  
   navlinks:
     - name: "about/"
       url: "about/"
     - name: "posts/"
       url: "posts/"
+    - name: "projects/"
+      url: "projects/"
 
   social:
     - name: "github"
@@ -31,14 +47,6 @@ params:
     - name: "linkedin"
       link: "https://www.linkedin.com/in/niits/"
 
-menu:
-  main:
-    - name: "Bài viết"
-      url: "/posts"
-      weight: 1
-    - name: "Chủ đề"
-      url: "/categories"
-      weight: 2
 markup:
   goldmark:
     renderer:

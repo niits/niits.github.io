@@ -1,0 +1,27 @@
+{{ define "main" }}
+<main role="main">
+    <header>
+        <h1>{{ .Title }}</h1>
+        {{ with .Content }}
+        <div class="archive-description">
+            {{ . }}
+        </div>
+        {{ end }}
+    </header>
+
+    <section class="projects-list">
+        {{ if .Site.Data.projects }}
+        <ul class="project-list">
+            {{ range .Site.Data.projects.list }}
+            <li class="project-item">
+                <h3><a href="{{ .url }}" target="_blank" rel="noopener">{{ .name }}</a></h3>
+                <p>{{ .desc | markdownify }}</p>
+            </li>
+            {{ end }}
+        </ul>
+        {{ else }}
+        <p>Chưa có project nào.</p>
+        {{ end }}
+    </section>
+</main>
+{{ end }}

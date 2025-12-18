@@ -1,29 +1,76 @@
 <head>
-    <link rel="preload" href="{{ "lib/font-awesome/webfonts/fa-brands-400.woff2" | relURL }}" as="font"
-        type="font/woff2" crossorigin="anonymous">
-    <link rel="preload" href="{{ "lib/font-awesome/webfonts/fa-regular-400.woff2" | relURL }}" as="font"
-        type="font/woff2" crossorigin="anonymous">
-    <link rel="preload" href="{{ "lib/font-awesome/webfonts/fa-solid-900.woff2" | relURL }}" as="font"
-        type="font/woff2" crossorigin="anonymous">
-    <link rel="preload" href="{{ "lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" | relURL }}" as="font"
-        type="font/woff2" crossorigin="anonymous">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="https://latest.cactus.chat/cactus.js"></script>
-    <link rel="stylesheet" href="https://latest.cactus.chat/style.css" type="text/css">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="vi">
+    <meta name="language" content="Vietnamese">
     <title>{{ if .IsPage }} {{ .Title }} | {{ end }}{{ .Site.Title }}</title>
     <link rel='canonical' href='{{ .Permalink }}'>
+    
+    <!-- SEO Meta Tags -->
+    {{ with .Description }}
+    <meta name="description" content="{{ . }}">
+    {{ else }}
     {{ with .Site.Params.description }}
-    <meta name="description" content="{{ . }}">{{ end }}
+    <meta name="description" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    
+    {{ with .Params.keywords }}
+    <meta name="keywords" content="{{ delimit . ", " }}">
+    {{ end }}
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="all,follow">
+    <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow,snippet,archive">
-    {{ template "_internal/opengraph.html" . }}
-    {{ template "_internal/twitter_cards.html" . }}
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:title" content="{{ if .IsPage }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    {{ with .Description }}
+    <meta property="og:description" content="{{ . }}">
+    {{ else }}
+    {{ with .Site.Params.description }}
+    <meta property="og:description" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    {{ with .Params.image }}
+    <meta property="og:image" content="{{ . | absURL }}">
+    {{ end }}
+    <meta property="og:locale" content="vi_VN">
+    <meta property="og:site_name" content="{{ .Site.Title }}">
+    {{ if .IsPage }}
+    <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+    <meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+    {{ with .Params.categories }}
+    {{ range first 1 . }}
+    <meta property="article:section" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    {{ with .Params.tags }}
+    {{ range . }}
+    <meta property="article:tag" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    {{ end }}
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ .Permalink }}">
+    <meta name="twitter:title" content="{{ if .IsPage }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    {{ with .Description }}
+    <meta name="twitter:description" content="{{ . }}">
+    {{ else }}
+    {{ with .Site.Params.description }}
+    <meta name="twitter:description" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    {{ with .Params.image }}
+    <meta name="twitter:image" content="{{ . | absURL }}">
+    {{ end }}
     {{ .Scratch.Set "colortheme" "white"}}
     {{ if .Site.Params.Colortheme }}
     {{ .Scratch.Set "colortheme" .Site.Params.Colortheme }}

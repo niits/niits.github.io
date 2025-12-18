@@ -7,18 +7,18 @@
   </section>
 
   <section id="writing">
-    <span class="h1"><a href="{{ .Site.Params.mainSection | absURL }}">{{ .Site.Params.mainSectionTitle | default "Writings" }}</a></span>
+    <h2><a href="{{ .Site.Params.mainSection | absURL }}">{{ .Site.Params.mainSectionTitle | default "Writings" }}</a></h2>
     {{ if (and (and (isset .Site.Params "tagsoverview") (eq .Site.Params.tagsOverview true)) (gt (len .Site.Taxonomies.tags) 0)) }}
-    <span class="h2">Topics</span>
-    <span class="widget tagcloud">
+    <h3>Topics</h3>
+    <nav class="widget tagcloud" aria-label="Topics navigation">
       {{ $AllRegularPagesCount := len .Site.RegularPages }}
       {{ range $elem := .Site.Taxonomies.tags.Alphabetical }}
       <a style="font-size: {{ (add 0.5 (mul 5 (div (float $elem.Count) $AllRegularPagesCount))) }}rem;" href="{{ $elem.Page.Permalink }}">
         {{- .Page.Title -}}
       </a>
       {{ end }}
-    </span>
-    <span class="h2">Most recent</span>
+    </nav>
+    <h3>Most recent</h3>
     {{ end }}
 
     {{ $showAllPostsOnHomePage := false }}
@@ -31,8 +31,8 @@
     <ul class="post-list">
       {{ range (.Paginate $mainPosts).Pages }}
         <li class="post-item">
-          <div class="meta"><time datetime="{{ time .Date }}" itemprop="datePublished">{{ .Date.Format $dataFormat }}</time></div>
-          <span><a href="{{ .Permalink }}">{{ if .Title }} {{- .Title -}} {{ else }} {{- print "Untitled" -}}{{ end }}</a></span>
+          <time class="meta" datetime="{{ time .Date }}" itemprop="datePublished">{{ .Date.Format $dataFormat }}</time>
+          <a href="{{ .Permalink }}">{{ if .Title }} {{- .Title -}} {{ else }} {{- print "Untitled" -}}{{ end }}</a>
         </li>
       {{ end }}
     </ul>
@@ -47,8 +47,8 @@
       {{ end }}
       {{ range (first (.Scratch.Get "count") $mainPosts) }}
         <li class="post-item">
-          <div class="meta"><time datetime="{{ time .Date }}" itemprop="datePublished">{{ .Date.Format $dataFormat }}</time></div>
-          <span><a href="{{ .Permalink }}">{{ if .Title }} {{- .Title -}} {{ else }} {{- print "Untitled" -}}{{ end }}</a></span>
+          <time class="meta" datetime="{{ time .Date }}" itemprop="datePublished">{{ .Date.Format $dataFormat }}</time>
+          <a href="{{ .Permalink }}">{{ if .Title }} {{- .Title -}} {{ else }} {{- print "Untitled" -}}{{ end }}</a>
         </li>
       {{ end }}
     </ul>
@@ -62,17 +62,17 @@
     {{ $showProjectsList = true }}
   {{ end }}
   {{ if $showProjectsList }}
-    {{ $projectsUrl := "#" }}
+    {{ $projectsUrl := "projects/" }}
     {{ if isset .Site.Params "projectsurl" }}
       {{ $projectsUrl = .Site.Params.projectsUrl }}
     {{ end }}
 
   <section id="projects">
-    <span class="h1"><a href="{{ $projectsUrl }}">Projects</a></span>
+    <h2><a href="{{ $projectsUrl }}">Projects</a></h2>
     <ul class="project-list">
-        {{ range .Site.Data.projects.list }}
+        {{ range first 2 .Site.Data.projects.list }}
         <li class="project-item">
-          <a href="{{ .url }}">{{ .name }}</a>: {{ .desc | markdownify }}
+          <a href="{{ .url }}" target="_blank" rel="noopener">{{ .name }}</a>: {{ .desc | markdownify }}
         </li>
         {{ end }}
     </ul>

@@ -1,0 +1,45 @@
+{{ define "main" }}
+<main role="main">
+  <header>
+    <h1>{{ .Title }}</h1>
+    <p>{{ len .Pages }} bài viết</p>
+  </header>
+  
+  <section class="taxonomy-list">
+    <ul>
+      {{ range .Pages }}
+      <li>
+        <article>
+          <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
+          <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+            {{ .Date.Format "02/01/2006" }}
+          </time>
+          {{ with .Summary }}
+          <p>{{ . | truncate 160 }}</p>
+          {{ end }}
+          {{ with .Params.categories }}
+          <div class="categories">
+            {{ range . }}
+            <a href="{{ "/categories/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
+            {{ end }}
+          </div>
+          {{ end }}
+        </article>
+      </li>
+      {{ end }}
+    </ul>
+  </section>
+  
+  {{ if gt .Paginator.TotalPages 1 }}
+  <nav class="pagination" role="navigation">
+    {{ if .Paginator.HasPrev }}
+    <a href="{{ .Paginator.Prev.URL }}" class="pagination-prev">← Trang trước</a>
+    {{ end }}
+    <span class="pagination-info">Trang {{ .Paginator.PageNumber }} / {{ .Paginator.TotalPages }}</span>
+    {{ if .Paginator.HasNext }}
+    <a href="{{ .Paginator.Next.URL }}" class="pagination-next">Trang tiếp →</a>
+    {{ end }}
+  </nav>
+  {{ end }}
+</main>
+{{ end }}

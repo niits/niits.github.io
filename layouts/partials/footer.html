@@ -1,0 +1,23 @@
+<footer role="contentinfo">
+  <div class="footer-content">
+    <p>&copy; {{ now.Year }} {{ .Site.Title }}. Được xây dựng với <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a>.</p>
+    {{ with .Site.Params.social }}
+    {{ end }}
+  </div>
+  
+  <!-- Website Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ .Site.Title | jsonify }},
+    "url": {{ .Site.BaseURL | jsonify }},
+    "description": {{ .Site.Params.description | jsonify }},
+    "inLanguage": "vi-VN",
+    "publisher": {
+      "@type": "Person",
+      "name": {{ .Site.Title | jsonify }}
+    }
+  }
+  </script>
+</footer>

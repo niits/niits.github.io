@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ .Site.LanguageCode }}">
+<html lang="vi">
 {{ partial "head.html" . }}
 <body class="max-width mx-auto px3 ltr">
   <div class="content index py4">
@@ -25,9 +25,9 @@
         {{ end }}
         <div class="postdate">
           {{ $dataFormat := .Site.Params.dateFormat | default "2006-01-02" }}
-          <time datetime="{{ .Date }}" itemprop="datePublished">{{ .Date.Format $dataFormat }}</time>
+          <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="datePublished">{{ .Date.Format $dataFormat }}</time>
           {{ if (and .Site.Params.show_updated (ne .Lastmod .Date)) }}
-            (Updated: <time datetime="{{ .Lastmod }}" itemprop="dateModified">{{ .Lastmod.Format $dataFormat }}</time>)
+            (Cập nhật: <time datetime="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="dateModified">{{ .Lastmod.Format $dataFormat }}</time>)
           {{ end }}
         </div>
         {{ $showReadTime := .Site.Params.showReadTime | default false }}
@@ -35,7 +35,7 @@
         <div class="article-read-time">
           <i class="far fa-clock"></i>
           {{ $readTime := math.Round (div (countwords .Content) 220.0) }}
-          {{ $readTime }} minute read
+          {{ $readTime }} phút đọc
         </div>
         {{ end }}
         {{ if gt .Params.categories 0 }}
@@ -43,7 +43,7 @@
             <i class="fas fa-archive"></i>
             {{ range $index, $value := .Params.categories }}
             {{ if gt $index 0 }} {{ print ", " }} {{ end }}
-            <a class="category-link" href="{{ "/categories/" | relLangURL }}{{ $value | urlize }}">{{ $value }}</a>
+            <a class="category-link" href="{{ "/categories/" | relLangURL }}{{ $value | urlize }}" itemprop="articleSection">{{ $value }}</a>
             {{ end }}
         </div>
         {{ end }}
@@ -52,7 +52,7 @@
             <i class="fas fa-tag"></i>
             {{ range $index, $value := .Params.tags }}
             {{ if gt $index 0 }} {{ print ", " }} {{ end }}
-            <a class="tag-link" href="{{ "/tags/" | relLangURL }}{{ $value | urlize }}" rel="tag">{{ $value }}</a>
+            <a class="tag-link" href="{{ "/tags/" | relLangURL }}{{ $value | urlize }}" rel="tag" itemprop="keywords">{{ $value }}</a>
             {{ end }}
         </div>
         {{ end }}
@@ -62,6 +62,44 @@
     <div class="content" itemprop="articleBody">
       {{ .Content}}
     </div>
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": {{ .Title | jsonify }},
+      "name": {{ .Title | jsonify }},
+      "description": {{ with .Description }}{{ . | jsonify }}{{ else }}{{ .Summary | plainify | jsonify }}{{ end }},
+      "inLanguage": "vi",
+      "url": {{ .Permalink | jsonify }},
+      "datePublished": {{ .Date.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+      "dateModified": {{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+      "author": {
+        "@type": "Person",
+        "name": {{ if isset .Site "author" }}{{ .Site.Author | jsonify }}{{ else }}{{ .Site.Title | jsonify }}{{ end }}
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": {{ .Site.Title | jsonify }},
+        "url": {{ .Site.BaseURL | jsonify }}
+      },
+      {{ with .Params.image }}
+      "image": {{ . | absURL | jsonify }},
+      {{ end }}
+      {{ with .Params.categories }}
+      "articleSection": {{ index . 0 | jsonify }},
+      {{ end }}
+      {{ with .Params.tags }}
+      "keywords": {{ delimit . ", " | jsonify }},
+      {{ end }}
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": {{ .Permalink | jsonify }}
+      },
+      "wordCount": {{ .WordCount }}
+    }
+    </script>
   </article>
 
   {{ partial "page_nav_mobile.html" . }}
