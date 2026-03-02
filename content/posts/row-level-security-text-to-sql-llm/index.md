@@ -1,5 +1,5 @@
 ---
-title: "Row Level Security + Text-to-SQL LLM: khóa dữ liệu theo user mà vẫn hỏi được tự nhiên"
+title: "Row Level Security + Text-to-SQL LLM"
 date: 2026-02-07T22:15:00+07:00
 
 categories:
